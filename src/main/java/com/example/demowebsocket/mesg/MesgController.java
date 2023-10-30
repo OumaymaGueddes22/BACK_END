@@ -11,19 +11,19 @@ public class MesgController {
 
     @MessageMapping("/mesg.sendMessage")
     @SendTo("/topic/public")
+
+    public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+        return chatMessage;
+    }
+
+
+    @MessageMapping("/chat.send")
+    @SendTo("/topic/public")
     //when we i
     public ChatMessage sendMessage(
             @Payload ChatMessage chatMessage
     ) {
-        return chatMessage;
-    }
-
-    public ChatMessage addUser(
-            @Payload ChatMessage chatMessage,
-            SimpMessageHeaderAccessor headerAccss
-
-    ){
-        headerAccss.getSessionAttributes().put("username",chatMessage.getSender());
         return chatMessage;
     }
 }

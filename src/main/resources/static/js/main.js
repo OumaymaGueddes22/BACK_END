@@ -20,8 +20,8 @@ function connect(event) {
     username = document.querySelector('#name').value.trim();
 
     if(username) {
-        usernamePage.classList.add('hidden');
-        chatPage.classList.remove('hidden');
+        usernamePage.style.display = 'none';
+        chatPage.style.display = 'block';
 
         var socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
@@ -31,41 +31,33 @@ function connect(event) {
     event.preventDefault();
 }
 
-
 function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
 
     // Tell your username to the server
-    stompClient.send("/app/chat.addUser",
+    stompClient.send("/app/mesg.sendMessage",
         {},
         JSON.stringify({sender: username, type: 'JOIN'})
     )
 
-    connectingElement.classList.add('hidden');
+    connectingElement.style.display = 'none';
 }
-
 
 function onError(error) {
     connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
     connectingElement.style.color = 'red';
 }
 
-
-function sendMessage(event) {
+function send(event) {
     var messageContent = messageInput.value.trim();
     if(messageContent && stompClient) {
-        var chatMessage = {
-            sender: username,
-            content: messageInput.value,
-            type: 'CHAT'
-        };
-        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        var chatMessage = JSON.parse('{ "sender": "' + username + '", "content": "' + messageInput.value + '", "type": "CHAT" }');
+        stompClient.send("/topic/public", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }
     event.preventDefault();
 }
-
 
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
@@ -104,15 +96,15 @@ function onMessageReceived(payload) {
     messageArea.scrollTop = messageArea.scrollHeight;
 }
 
-
 function getAvatarColor(messageSender) {
     var hash = 0;
     for (var i = 0; i < messageSender.length; i++) {
         hash = 31 * hash + messageSender.charCodeAt(i);
     }
+
     var index = Math.abs(hash % colors.length);
     return colors[index];
 }
 
 usernameForm.addEventListener('submit', connect, true)
-messageForm.addEventListener('submit', sendMessage, true)
+messageForm.addEventListener('submit', send, true)
