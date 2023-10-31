@@ -1,0 +1,280 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Arial", sans-serif;
+  font-size: 16px;
+  color: #333;
+  background-color: #f0f0f0;
+  line-height: 1.6;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.hidden {
+  display: none;
+}
+
+.form-control {
+  width: 100%;
+  min-height: 42px;
+  font-size: 18px;
+  border: 2px solid #3498db;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+input {
+  outline: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 2em;
+  color: #333;
+}
+
+a {
+  color: #3498db;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: #258cd1;
+}
+
+button {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: none;
+  font-size: 18px;
+  outline: none;
+  line-height: 100%;
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: 10px 20px;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+  cursor: pointer;
+  min-height: 42px;
+}
+
+button.default {
+  background-color: #ecf0f1;
+  color: #333;
+}
+
+button.primary {
+  background-color: #3498db;
+  color: #fff;
+}
+
+button.accent {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+#username-page {
+  text-align: center;
+}
+
+.username-page-container {
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  max-width: 500px;
+  display: inline-block;
+  margin-top: 40px;
+  position: relative;
+  padding: 40px;
+  min-height: 300px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  margin-top: -150px;
+}
+
+.username-page-container .username-submit {
+  margin-top: 20px;
+}
+
+#chat-page {
+  position: relative;
+  height: 100%;
+}
+
+.chat-container {
+  max-width: 700px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  margin-top: 40px;
+  height: calc(100% - 80px);
+  max-height: 600px;
+  position: relative;
+}
+
+#chat-page ul {
+  list-style-type: none;
+  background-color: #fff;
+  margin: 0;
+  overflow: auto;
+  overflow-y: scroll;
+  padding: 0 20px 0 20px;
+  height: calc(100% - 180px);
+}
+
+#chat-page #messageForm {
+  padding: 20px;
+}
+
+#chat-page ul li {
+  line-height: 1.6;
+  padding: 20px;
+  margin: 0;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+#chat-page ul li p {
+  margin: 0;
+}
+
+#chat-page .event-message {
+  width: 100%;
+  text-align: center;
+  clear: both;
+}
+
+#chat-page .event-message p {
+  color: #777;
+  font-size: 16px;
+  word-wrap: break-word;
+}
+
+#chat-page .chat-message {
+  padding-left: 80px;
+  position: relative;
+}
+
+#chat-page .chat-message i {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  overflow: hidden;
+  left: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 20px;
+  line-height: 42px;
+  color: #fff;
+  text-align: center;
+  border-radius: 50%;
+  font-style: normal;
+  text-transform: uppercase;
+}
+
+#chat-page .chat-message span {
+  color: #333;
+  font-weight: 600;
+}
+
+#chat-page .chat-message p {
+  color: #43464b;
+}
+
+#messageForm .input-group input {
+  float: left;
+  width: calc(100% - 100px);
+  font-size: 18px;
+  border: 2px solid #3498db;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+#messageForm .input-group button {
+  float: left;
+  width: 90px;
+  height: 42px;
+  margin-left: 10px;
+}
+
+.chat-header {
+  text-align: center;
+  padding: 20px;
+  border-bottom: 1px solid #ecf0f1;
+  background-color: #f0f0f0;
+}
+
+.chat-header h2 {
+  margin: 0;
+  font-weight: 500;
+}
+
+.connecting {
+  padding-top: 10px;
+  text-align: center;
+  color: #777;
+  position: absolute;
+  top: 80px;
+  width: 100%;
+}
+
+@media screen and (max-width: 730px) {
+  .chat-container {
+    margin: 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .chat-container {
+    height: calc(100% - 40px);
+  }
+
+  .username-page-container {
+    width: auto;
+    margin: 15px;
+    padding: 30px;
+  }
+
+  #chat-page ul {
+    height: calc(100% - 150px);
+  }
+
+  #messageForm .input-group button {
+    width: 80px;
+  }
+
+  #messageForm .input-group input {
+    width: calc(100% - 85px);
+  }
+
+  .chat-header {
+    padding: 15px;
+  }
+
+  .connecting {
+    top: 70px;
+  }
+
+  .chat-header h2 {
+    font-size: 1.2em;
+  }
+}
