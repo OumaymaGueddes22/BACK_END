@@ -2,6 +2,7 @@ package com.example.demowebsocket.mesg;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 public class MesgController {
 
 
@@ -25,7 +26,7 @@ public class MesgController {
     @SendTo("/topic/public")
 
     public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getUserID());
+        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
         return chatMessage;
     }
 
@@ -48,21 +49,26 @@ public class MesgController {
         return mesgService.findAllMessages();
     }
 
-    @GetMapping("/{mesgId}")
-    public ChatMessage getMessage(@PathVariable String mesgId){
-        return mesgService.getMessageById(mesgId);
+   /*@GetMapping("/{id}")
+    public ChatMessage getMessage(@PathVariable String id){
+        return mesgService.getMessageById(id);
+    }*/
+
+    @PutMapping("/updateChatMessage/{id}")
+    public ChatMessage updateMessage(@PathVariable String id, @RequestBody ChatMessage msgRequest) {
+        return mesgService.updateMessage(id, msgRequest);
     }
 
-    @PutMapping("/updateChatMessage")
-    public ChatMessage updateMessage(ChatMessage msgRequest){
-        return mesgService.updateMessage(msgRequest);
-    }
-
-    @DeleteMapping("/deleteUpdate")
-    public  void  deleteMesg(String mesgId){
+    /*@DeleteMapping("/deleteUpdate/{id}")
+    public  void  deleteMesg(@PathVariable String mesgId){
         mesgService.deleteMesg( mesgId);
-    }
+    }*/
 
+    @DeleteMapping("/deleteId/{id}")
+    public ResponseEntity<HttpStatus> deleteCandidat(@PathVariable String id) {
+        mesgService.deleteMesg(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
     @PutMapping("/ChangeVisibility")
     public ChatMessage messageVisible(ChatMessage msgReq){
         return mesgService.messageVisible(msgReq);

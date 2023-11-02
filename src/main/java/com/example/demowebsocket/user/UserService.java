@@ -2,6 +2,8 @@ package com.example.demowebsocket.user;
 
 import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.conversation.ConversationRep;
+import com.example.demowebsocket.mesg.ChatMessage;
+import com.example.demowebsocket.mesg.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,11 +20,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
+    @Autowired
+    private ChatMessageRepository chatRep;
+    @Autowired
+    private ConversationRep convRep;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
 
-    @Autowired
-    private ConversationRep convRep;
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -43,7 +48,7 @@ public class UserService {
     }
 
     public User addUser(User user){
-        user.setId(UUID.randomUUID().toString().split("-")[0]);
+
         return repository.save(user);
 
     }
@@ -52,12 +57,12 @@ public class UserService {
         return repository.findAll();
     }
 
-    public User getUserById(String userId){
-        return repository.findById(userId).get();
+    public User findById(String id) {
+        return repository.findById(id).orElse(null);
     }
 
 
-    //update
+
     public User updateUser(User userRequest){
         User updateUser=repository.findById(userRequest.getId()).get();
         updateUser.setEmail(userRequest.getEmail());
@@ -68,6 +73,34 @@ public class UserService {
         return  repository.save(updateUser);
     }
 
+
+    //addMessageToUser
+    public User addMessageToUser(String idUser, ChatMessage chatMsg){
+        chatMsg=chatRep.save(chatMsg);
+        User user=repository.findById(idUser).get();
+        List<ChatMessage> chatMessg= new ArrayList<>();
+        if(user.getChatMessages() != null){
+            chatMessg=user.getChatMessages();
+        }
+        chatMessg.add(chatMsg);
+        user.setChatMessages(chatMessg);
+        repository.save(user);
+        return user;
+
+    }
+
+    public User addConversationToUser(String idUser, Conversation conv){
+        conv=convRep.save(conv);
+        User user=repository.findById(idUser).get();
+        List<Conversation>conversations=new ArrayList<>();
+        if(user.getConversation()!=null){
+            conversations=user.getConversation();
+        }
+        conversations.add(conv);
+        user.setConversation(conversations);
+        repository.save(user);
+        return user;
+    }
     //addUserToConveration
     public User addUserToConversation(String userId, String conversationId) {
         User user = repository.findById(userId).orElse(null);

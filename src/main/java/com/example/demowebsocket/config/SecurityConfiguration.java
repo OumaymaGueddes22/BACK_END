@@ -3,6 +3,7 @@ package com.example.demowebsocket.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,15 +16,12 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
+import org.springframework.web.servlet.ViewResolver;
+import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static com.example.demowebsocket.user.Permission.*;
-import static com.example.demowebsocket.user.Role.ADMIN;
-import static com.example.demowebsocket.user.Role.Client;
-import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -92,6 +90,7 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
+
 
 
 }

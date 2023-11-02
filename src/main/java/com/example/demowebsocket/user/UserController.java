@@ -1,5 +1,7 @@
 package com.example.demowebsocket.user;
 
+import com.example.demowebsocket.conversation.Conversation;
+import com.example.demowebsocket.mesg.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +40,9 @@ public class UserController {
     }
 
 
-    @GetMapping("/userId")
-    public User getUserById(String userId){
-        return service.getUserById(userId);
+    @GetMapping("/{id}")
+    public User findById(@PathVariable String id) {
+        return service.findById(id);
     }
 
 
@@ -50,15 +52,32 @@ public class UserController {
         return service.updateUser(userRequest);
     }
 
-    @PostMapping("deleteUser")
+    @PostMapping("/addUserToConv")
     public User addUserToConversation(String userId, String conversationId){
         return service.addUserToConversation(userId, conversationId);
     }
 
-    @DeleteMapping("/deleteUser")
-    public void deleteUser(String userId){
+    @DeleteMapping("/deleteUser/{id}")
+    public void deleteUser(@PathVariable String userId){
         service.deleteUser(userId);
     }
+
+
+    //addConvToUser
+    @PostMapping("/addConvToUser/:{idUser}")
+    public User addConversationToUser(@PathVariable("idUser") String idUser,@RequestBody Conversation conv){
+        return service.addConversationToUser(idUser, conv);
+    }
+
+    //addMsgToUser
+    @PostMapping("/addMsgToUser/:{idUser}")
+    public User addMessageToUser(@PathVariable("idUser") String idUser,@RequestBody ChatMessage chatMsg){
+        return service.addMessageToUser(idUser ,chatMsg);
+    }
+
+
+
+
 
 }
 

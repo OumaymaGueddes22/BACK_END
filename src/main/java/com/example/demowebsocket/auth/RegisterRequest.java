@@ -1,6 +1,5 @@
 package com.example.demowebsocket.auth;
 
-import com.example.demowebsocket.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +16,5 @@ public class RegisterRequest {
   private String email;
   private String password;
   private String phoneNumber;
-  private Role role;
+  private String role;
 }

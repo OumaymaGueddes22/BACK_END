@@ -23,9 +23,9 @@ public class Conversation {
     @Id
     private String id;
     private Boolean isgroup;
-    @DBRef
+
     private List<User> user ;
-    @DBRef
+
     private List<ChatMessage> messages;
 
 

@@ -33,19 +33,19 @@ public class User implements UserDetails {
   private String email;
   private String password;
 
-  @DBRef(lazy = true)
+
   private List<Conversation> conversation;
 
-  @DBRef(lazy = true)
+
   private List<ChatMessage> chatMessages;
 
-  private Role role;
+  private String role;
 
   private List<Token> tokens;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return role.getAuthorities();
+    return null;
   }
 
   @Override
