@@ -1,6 +1,6 @@
-package com.example.demowebsocket.models;
+package com.example.demowebsocket.token;
 
-
+import com.example.demowebsocket.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,12 +13,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
-public class User {
+public class Token {
 
-    @Id
-    private String id;
-    private String firstname;
-    private String lastname;
-    private String psswrd;
-    private String email;
+  @Id
+  public String id;
+
+  public String token;
+
+  public TokenType tokenType = TokenType.BEARER;
+
+  public boolean revoked;
+
+  public boolean expired;
+
+
+  private User user;
 }

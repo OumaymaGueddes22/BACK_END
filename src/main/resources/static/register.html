@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <link rel="stylesheet" type="text/css" href="css/register.css">
+</head>
+<body>
+<h1>Register</h1>
+
+
+
+<form  method="post">
+  <div id="success-message" class="custom-alert-success" style="display: none; color: green;">
+    Success
+  </div>
+
+  <input type="text" name="firstname" placeholder="Firstname">
+  <input type="text" name="lastname" placeholder="Lastname">
+  <input type="email" name="email" placeholder="Email">
+  <input type="password" name="password" placeholder="Password">
+  <select name="role">
+    <option value="Client">Client</option>
+    <option value="ADMIN">Admin</option>
+  </select>
+  <input type="submit" value="Register">
+</form>
+</body>
+<script src="js/register.js"></script>
+
+</html>
