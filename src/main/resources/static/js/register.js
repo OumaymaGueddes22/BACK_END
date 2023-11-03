@@ -6,7 +6,7 @@ registerForm.addEventListener("submit", async (event) => {
 
     const firstname = event.target.querySelector("input[name=firstname]").value;
     const lastname = event.target.querySelector("input[name=lastname]").value;
-    const email = event.target.querySelector("input[name=email]").value;
+    const phoneNumber = event.target.querySelector("input[name=phoneNumber]").value;
     const password = event.target.querySelector("input[name=password]").value;
     const role = event.target.querySelector("select[name=role]").value;
 
@@ -19,7 +19,7 @@ registerForm.addEventListener("submit", async (event) => {
             body: JSON.stringify({
                 firstname,
                 lastname,
-                email,
+                phoneNumber,
                 password,
                 role,
             }),

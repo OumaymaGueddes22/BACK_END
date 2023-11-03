@@ -64,13 +64,13 @@ public class UserController {
 
 
     //addConvToUser
-    @PostMapping("/addConvToUser/:{idUser}")
+    @PostMapping("/addConvToUser/{idUser}")
     public User addConversationToUser(@PathVariable("idUser") String idUser,@RequestBody Conversation conv){
         return service.addConversationToUser(idUser, conv);
     }
 
     //addMsgToUser
-    @PostMapping("/addMsgToUser/:{idUser}")
+    @PostMapping("/addMsgToUser/{idUser}")
     public User addMessageToUser(@PathVariable("idUser") String idUser,@RequestBody ChatMessage chatMsg){
         return service.addMessageToUser(idUser ,chatMsg);
     }

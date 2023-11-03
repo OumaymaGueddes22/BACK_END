@@ -5,8 +5,8 @@ import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.user.User;
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 
@@ -25,8 +25,10 @@ public class ChatMessage {
     private MsgType type;
 
     private Date time;
+    @DBRef
+    private User user;
 
-    //private String sender;
+  //  private String sender;
 
     User msgUser;
 

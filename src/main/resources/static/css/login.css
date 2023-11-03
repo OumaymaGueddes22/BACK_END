@@ -25,7 +25,7 @@ form {
 }
 
 /* Style des champs de formulaire */
-input[type="email"],
+input[type="text"],
 input[type="password"] {
     width: 100%;
     padding: 10px;

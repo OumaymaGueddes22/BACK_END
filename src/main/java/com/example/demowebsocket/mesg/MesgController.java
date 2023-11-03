@@ -28,10 +28,14 @@ public class MesgController {
     @SendTo("/topic/public")
 
     public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getMsgUser().getFirstname());
+        User user = chatMessage.getUser();
+
+        if (user != null) {
+            headerAccessor.getSessionAttributes().put("username", user.getUsername());
+        }
+
         return chatMessage;
     }
-
 
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
@@ -77,10 +81,18 @@ public class MesgController {
     }
 
 
-    @PostMapping("/addUserToMsg/:{msgId}")
+   /* @PostMapping("/addUserToMsg/:{msgId}")
     public ChatMessage addUserToMessage(String msgId, User user){
         return mesgService.addUserToMessage(msgId, user);
+    }*/
+
+
+    @PostMapping("/addUserToMsg/{id}")
+    public ChatMessage addUserToMessage(@PathVariable String id, @RequestBody ChatMessage chatMessage) {
+
+        return mesgService.addUserToMessage(id,chatMessage);
     }
+
 
 
     @PostMapping("/addConvToMesg/:{msgId}")

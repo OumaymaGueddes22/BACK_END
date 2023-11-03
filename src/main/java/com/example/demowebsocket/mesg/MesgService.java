@@ -7,6 +7,7 @@ import com.example.demowebsocket.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,13 +73,27 @@ public class MesgService {
     }
 
 
-    public ChatMessage addUserToMessage(String msgId, User user){
+    /*public ChatMessage addUserToMessage(String msgId, User user){
         user=userRep.save(user);
         ChatMessage msg=mesgRep.findById(msgId).get();
         msg.setMsgUser(user);
         mesgRep.save(msg);
         return msg ;
+    }*/
+
+
+    public ChatMessage addUserToMessage(String userId, ChatMessage msgRequest) {
+        User user = userRep.findById(userId).orElse(null);
+         msgRequest.setTime(new Date());
+        if (user != null) {
+            msgRequest.setUser(user);
+            return mesgRep.save(msgRequest);
+        } else {
+
+            return null;
+        }
     }
+
 
     public ChatMessage addConvToMesaage(String msgId ,Conversation conv){
         conv=convRep.save(conv);
