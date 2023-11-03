@@ -1,6 +1,7 @@
 package com.example.demowebsocket.mesg;
 
 
+import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.user.User;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -20,17 +21,17 @@ public class ChatMessage {
    @Id
    private String id;
     private String txt;
-    private String userID;
+    //private String userID;
     private MsgType type;
 
     private Date time;
 
-    private String sender;
+    //private String sender;
 
     User msgUser;
 
     private Boolean isDeleted;
-    private String converId;
+    Conversation msgConv;
 
 
 }

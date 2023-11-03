@@ -1,5 +1,7 @@
 package com.example.demowebsocket.mesg;
 
+import com.example.demowebsocket.conversation.Conversation;
+import com.example.demowebsocket.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,7 @@ public class MesgController {
     @SendTo("/topic/public")
 
     public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+        headerAccessor.getSessionAttributes().put("username", chatMessage.getMsgUser().getFirstname());
         return chatMessage;
     }
 
@@ -75,6 +77,16 @@ public class MesgController {
     }
 
 
+    @PostMapping("/addUserToMsg/:{msgId}")
+    public ChatMessage addUserToMessage(String msgId, User user){
+        return mesgService.addUserToMessage(msgId, user);
+    }
+
+
+    @PostMapping("/addConvToMesg/:{msgId}")
+    public ChatMessage addConvToMesaage(String msgId , Conversation conv){
+        return mesgService.addConvToMesaage(msgId, conv);
+    }
 
 
 

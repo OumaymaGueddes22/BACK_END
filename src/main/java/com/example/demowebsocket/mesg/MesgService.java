@@ -1,6 +1,9 @@
 package com.example.demowebsocket.mesg;
 
 import com.example.demowebsocket.conversation.Conversation;
+import com.example.demowebsocket.conversation.ConversationRep;
+import com.example.demowebsocket.user.User;
+import com.example.demowebsocket.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +17,29 @@ public class MesgService {
     private ChatMessageRepository mesgRep;
 
 
+    @Autowired
+    private UserRepository userRep;
+
+    @Autowired
+    private ConversationRep convRep;
+
+    public MesgService(ChatMessageRepository mesgRep,UserRepository userRep,ConversationRep convRep){
+        this.convRep=convRep;
+        this.userRep=userRep;
+        this.mesgRep=mesgRep;
+    }
+
+
     public ChatMessage addChatMessage(ChatMessage msg) {
         msg.setId(UUID.randomUUID().toString().split("-")[0]);
         return mesgRep.save(msg);
     }
 
+    //GetAllMessages
     public List<ChatMessage> findAllMessages(){
         return mesgRep.findAll();
     }
+
 
 
 
@@ -51,6 +69,23 @@ public class MesgService {
         else {
             return null;
         }
+    }
+
+
+    public ChatMessage addUserToMessage(String msgId, User user){
+        user=userRep.save(user);
+        ChatMessage msg=mesgRep.findById(msgId).get();
+        msg.setMsgUser(user);
+        mesgRep.save(msg);
+        return msg ;
+    }
+
+    public ChatMessage addConvToMesaage(String msgId ,Conversation conv){
+        conv=convRep.save(conv);
+        ChatMessage msg=mesgRep.findById(msgId).get();
+        msg.setMsgConv(conv);
+        mesgRep.save(msg);
+        return msg ;
     }
 
 

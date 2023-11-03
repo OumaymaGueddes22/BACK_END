@@ -119,5 +119,9 @@ public class UserService {
 
     }
 
+    public User findUserByUsername(String username) {
+        return repository.findByUsername(username); // Assuming you have a findByUsername method in your UserRepository
+    }
+
 
 }
