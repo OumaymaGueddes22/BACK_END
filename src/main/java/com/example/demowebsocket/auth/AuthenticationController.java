@@ -1,12 +1,16 @@
 package com.example.demowebsocket.auth;
 
+import com.example.demowebsocket.mesg.ChatMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -15,6 +19,8 @@ import java.io.IOException;
 public class AuthenticationController {
 
   private final AuthenticationService service;
+  private final SimpMessagingTemplate messagingTemplate;
+
 
   @PostMapping("/register")
   public ResponseEntity<AuthenticationResponse> register(
@@ -24,12 +30,14 @@ public class AuthenticationController {
   }
   @PostMapping("/authenticate")
   public ResponseEntity<AuthenticationResponse> authenticate(
-      @RequestBody AuthenticationRequest request
+          @RequestBody AuthenticationRequest request
   ) {
     return ResponseEntity.ok(service.authenticate(request));
   }
 
-  @PostMapping("/refresh-token")
+
+
+    @PostMapping("/refresh-token")
   public void refreshToken(
       HttpServletRequest request,
       HttpServletResponse response

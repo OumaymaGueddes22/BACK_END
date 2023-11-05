@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 
 var usernamePage = document.querySelector('#username-page');
 var chatPage = document.querySelector('#chat-page');
@@ -39,7 +39,7 @@ function onConnected() {
     // Tell your username to the server
     stompClient.send("/app/mesg.sendMessage",
         {},
-        JSON.stringify({sender: username, type: 'JOIN'})
+        JSON.stringify({user: username, type: 'JOIN'})
     )
 
     connectingElement.classList.add('hidden');
@@ -51,19 +51,28 @@ function onError(error) {
     connectingElement.style.color = 'red';
 }
 
+var authResponse = JSON.parse(localStorage.getItem("authResponse"));
+var userId = authResponse.id;
+
 function send(event) {
-    var txtContent = messageInput.value.trim(); // Change variable name to txtContent
+    var txtContent = messageInput.value.trim();
+
     if (txtContent && stompClient) {
         var chatMessage = {
-            txt: txtContent,  // Change variable name to txtContent
+            txt: txtContent,
             sender: username,
             type: "CHAT"
         };
-        stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+
+        // Mettez l'ID utilisateur dans le chemin de l'URL de destination
+        var destination = "/app/chat.send/" + userId;
+
+        stompClient.send(destination, {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }
     event.preventDefault();
 }
+
 
 function onMessageReceived(payload) {
     var txt = JSON.parse(payload.body); // Change variable name to txt
@@ -113,4 +122,4 @@ function getAvatarColor(messageSender) {
 }
 
 usernameForm.addEventListener('submit', connect, true);
-messageForm.addEventListener('submit', send, true);
+messageForm.addEventListener('submit', send, true);*/

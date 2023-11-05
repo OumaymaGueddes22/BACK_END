@@ -28,7 +28,7 @@ public class ChatMessage {
     @DBRef
     private User user;
 
-  //  private String sender;
+    private String sender;
 
     User msgUser;
 

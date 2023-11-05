@@ -33,6 +33,7 @@ public class AuthenticationService {
     var user = User.builder()
         .firstname(request.getFirstname())
         .lastname(request.getLastname())
+        .email(request.getEmail())
         .password(passwordEncoder.encode(request.getPassword()))
         .role(request.getRole())
             .phoneNumber(request.getPhoneNumber())
@@ -63,9 +64,11 @@ public class AuthenticationService {
     return AuthenticationResponse.builder()
             .accessToken(jwtToken)
             .refreshToken(refreshToken)
+            .id(user.getId())
+            .firstname(user.getFirstname())
+            .phoneNumber(user.getPhoneNumber())
             .build();
   }
-
 
   private void saveUserToken(User user, String jwtToken) {
     var token = Token.builder()

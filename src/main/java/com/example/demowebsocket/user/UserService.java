@@ -63,7 +63,7 @@ public class UserService {
 
 
 
-    public User updateUser(User userRequest){
+    /*public User updateUser(User userRequest){
         User updateUser=repository.findById(userRequest.getId()).get();
         updateUser.setEmail(userRequest.getEmail());
         updateUser.setFirstname(userRequest.getFirstname());
@@ -71,7 +71,46 @@ public class UserService {
         updateUser.setPhoneNumber(userRequest.getPhoneNumber());
         updateUser.setPassword(userRequest.getPassword());
         return  repository.save(updateUser);
+    }*/
+
+    public class UserNotFoundException extends RuntimeException {
+        public UserNotFoundException(String message) {
+            super(message);
+        }
     }
+
+
+    public User updateUser(String userId, User updatedUser) {
+        // Check if the user with the provided ID exists in the database
+        User existingUser = repository.findById(userId).orElse(null);
+
+        if (existingUser == null) {
+            // Handle the case when the user doesn't exist
+            // You can throw an exception or return an appropriate response
+            throw new UserNotFoundException("User not found with ID: " + userId);
+        }
+
+        // Update user information
+        existingUser.setFirstname(updatedUser.getFirstname());
+        existingUser.setLastname(updatedUser.getLastname());
+        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setPassword(updatedUser.getPassword());
+
+        // Save the updated user to the database
+        return repository.save(existingUser);
+    }
+
+    /*public User updateUser(String iduser,User userRequest){
+        User existingUser=repository.findById(iduser).orElse(null);
+        if(existingUser != null){
+            userRequest.setId(existingUser.getId());
+
+            return repository.save(existingUser);
+        }else {
+            return null;
+        }
+    }*/
 
 
     //addMessageToUser
@@ -114,9 +153,22 @@ public class UserService {
         return user;
     }
 
-    public void deleteUser(String userId){
+   /* public void deleteUser(String userId){
         repository.deleteById(userId);
 
+    }*/
+
+    public void deleteUserById(String userId) {
+        // Check if the user with the provided ID exists in the database
+        User existingUser = repository.findById(userId).orElse(null);
+
+        if (existingUser == null) {
+            // Handle the case when the user doesn't exist
+            throw new UserNotFoundException("User not found with ID: " + userId);
+        }
+
+        // Delete the user
+        repository.delete(existingUser);
     }
 
     public User findUserByUsername(String username) {

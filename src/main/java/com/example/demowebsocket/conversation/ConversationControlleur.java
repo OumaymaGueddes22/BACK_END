@@ -17,7 +17,7 @@ public class ConversationControlleur {
     private ConversationService convService;
 
     @PostMapping("/createConv")
-    @ResponseStatus(HttpStatus.CREATED)
+   // @ResponseStatus(HttpStatus.CREATED)
     public Conversation createConversation(@RequestBody Conversation conv){
         return convService.addConversation(conv);
     }
@@ -31,6 +31,8 @@ public class ConversationControlleur {
     public Conversation getConversationById(@PathVariable String convId){
         return convService.getConverstaionById(convId);
     }
+
+
 
     @PutMapping("/updateConv/{id}")
     public Conversation updateCandidat(@PathVariable String id, @RequestBody Conversation convRequest) {
@@ -46,7 +48,7 @@ public class ConversationControlleur {
     }
 
 
-    @PostMapping("/addMsgToConv/:{IdConv}")
+    @PostMapping("/addMsgToConv/{IdConv}")
     public Conversation addMessageToConversation(@PathVariable("IdConv")String IdConv,@RequestBody ChatMessage msg){
         return convService.addMessageToConversation(IdConv,msg);
     }
