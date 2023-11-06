@@ -69,10 +69,10 @@ public class MesgController {
         return mesgService.findAllMessages();
     }
 
-   /*@GetMapping("/{id}")
+    @GetMapping("/getMessage/{id}")
     public ChatMessage getMessage(@PathVariable String id){
         return mesgService.getMessageById(id);
-    }*/
+    }
 
     @PutMapping("/updateChatMessage/{id}")
     public ChatMessage updateMessage(@PathVariable String id, @RequestBody ChatMessage msgRequest) {
@@ -89,9 +89,10 @@ public class MesgController {
         mesgService.deleteMesg(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    @PutMapping("/ChangeVisibility")
-    public ChatMessage messageVisible(ChatMessage msgReq){
-        return mesgService.messageVisible(msgReq);
+
+    @PutMapping("/ChangeVisibility/{id}")
+    public ChatMessage messageVisible(@PathVariable String id , @RequestBody ChatMessage msgReq){
+        return mesgService.messageVisible(id ,msgReq);
     }
 
 
@@ -109,7 +110,7 @@ public class MesgController {
 
 
 
-    @PostMapping("/addConvToMesg/:{msgId}")
+    @PostMapping("/addConvToMesg/{msgId}")
     public ChatMessage addConvToMesaage(String msgId , Conversation conv){
         return mesgService.addConvToMesaage(msgId, conv);
     }

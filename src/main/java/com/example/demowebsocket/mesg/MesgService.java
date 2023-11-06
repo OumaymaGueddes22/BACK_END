@@ -108,10 +108,12 @@ public class MesgService {
         mesgRep.deleteById(mesgId);
     }
 
-    public ChatMessage messageVisible(ChatMessage msgReq){
-        ChatMessage DeleMsg=mesgRep.findById(msgReq.getId()).get();
+    public ChatMessage messageVisible(String idMessage, ChatMessage msgReq){
+        ChatMessage DeleMsg=mesgRep.findById(idMessage).orElse(null);
+        DeleMsg.setId(msgReq.getId());
         DeleMsg.setIsDeleted(msgReq.getIsDeleted());
-        return mesgRep.save(DeleMsg);
+        return  mesgRep.save(DeleMsg);
+
     }
 
 
