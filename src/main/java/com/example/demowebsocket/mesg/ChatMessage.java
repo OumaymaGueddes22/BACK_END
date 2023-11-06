@@ -19,16 +19,19 @@ import java.util.Date;
 public class ChatMessage {
 
    @Id
-   private String id;
+    private String id;
     private String txt;
     //private String userID;
     private MsgType type;
 
     private Date time;
+
     @DBRef
     private User user;
 
     private String sender;
+
+    private String convName;
 
     User msgUser;
 

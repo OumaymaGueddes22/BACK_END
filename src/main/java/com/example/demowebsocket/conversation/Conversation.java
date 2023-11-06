@@ -24,8 +24,11 @@ public class Conversation {
     private String id;
     private Boolean isgroup;
 
+    private String typeConv;
+
     private List<User> user ;
 
+    //lezem id message yetsab fel base
     private List<ChatMessage> messages;
 
 
