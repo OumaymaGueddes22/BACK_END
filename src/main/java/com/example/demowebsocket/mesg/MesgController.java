@@ -47,11 +47,16 @@ public class MesgController {
 
         User user = userRepository.findById(userId).orElse(null);
 
+
         if (user != null) {
             chatMessage.setTime(new Date());
             chatMessage.setUser(user);
+            chatMessage.setIsDeleted(false);
             chatMessageRepository.save(chatMessage);
+            user.getChatMessages().add(chatMessage);
+            userRepository.save(user);
         }
+
 
         return chatMessage;
     }

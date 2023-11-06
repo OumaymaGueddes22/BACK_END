@@ -3,6 +3,7 @@ package com.example.demowebsocket.mesg;
 
 import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -26,6 +27,7 @@ public class ChatMessage {
 
     private Date time;
 
+    @JsonBackReference
     @DBRef
     private User user;
 

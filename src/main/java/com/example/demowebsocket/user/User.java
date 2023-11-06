@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,7 +39,8 @@ public class User implements UserDetails {
   private List<Conversation> conversation;
 
 
-  private List<ChatMessage> chatMessages;
+  @DBRef
+  private List<ChatMessage> chatMessages = new ArrayList<>();
   private String role;
 
   private List<Token> tokens;
