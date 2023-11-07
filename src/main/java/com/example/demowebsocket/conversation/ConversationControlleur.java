@@ -16,10 +16,10 @@ public class ConversationControlleur {
     @Autowired
     private ConversationService convService;
 
-    @PostMapping("/createConv")
-   // @ResponseStatus(HttpStatus.CREATED)
-    public Conversation createConversation(@RequestBody Conversation conv){
-        return convService.addConversation(conv);
+    @PostMapping("/createConv/{id}")
+    //@ResponseStatus(HttpStatus.CREATED)
+    public Conversation createConversation(@PathVariable String id, @RequestBody Conversation conv){
+        return convService.addConversation(id, conv);
     }
 
     @GetMapping("/allConv")
@@ -31,8 +31,6 @@ public class ConversationControlleur {
     public Conversation getConversationById(@PathVariable String convId){
         return convService.getConverstaionById(convId);
     }
-
-
 
     @PutMapping("/updateConv/{id}")
     public Conversation updateCandidat(@PathVariable String id, @RequestBody Conversation convRequest) {
@@ -48,7 +46,7 @@ public class ConversationControlleur {
     }
 
 
-    @PostMapping("/addMsgToConv/{IdConv}")
+    @PostMapping("/addMsgToConv/:{IdConv}")
     public Conversation addMessageToConversation(@PathVariable("IdConv")String IdConv,@RequestBody ChatMessage msg){
         return convService.addMessageToConversation(IdConv,msg);
     }

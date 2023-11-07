@@ -38,20 +38,15 @@ public class MesgController {
     }
 
 
-
     @MessageMapping("/chat.send/{userId}")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage, @DestinationVariable String userId) {
-
-
-
         User user = userRepository.findById(userId).orElse(null);
-
 
         if (user != null) {
             chatMessage.setTime(new Date());
             chatMessage.setUser(user);
-            chatMessage.setIsDeleted(false);
+            chatMessage.setIsDeleted(true);
             chatMessageRepository.save(chatMessage);
             user.getChatMessages().add(chatMessage);
             userRepository.save(user);
@@ -74,10 +69,10 @@ public class MesgController {
         return mesgService.findAllMessages();
     }
 
-    @GetMapping("/getMessage/{id}")
+   /*@GetMapping("/{id}")
     public ChatMessage getMessage(@PathVariable String id){
         return mesgService.getMessageById(id);
-    }
+    }*/
 
     @PutMapping("/updateChatMessage/{id}")
     public ChatMessage updateMessage(@PathVariable String id, @RequestBody ChatMessage msgRequest) {
@@ -94,10 +89,9 @@ public class MesgController {
         mesgService.deleteMesg(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-    @PutMapping("/ChangeVisibility/{id}")
-    public ChatMessage messageVisible(@PathVariable String id , @RequestBody ChatMessage msgReq){
-        return mesgService.messageVisible(id ,msgReq);
+    @PutMapping("/ChangeVisibility")
+    public ChatMessage messageVisible(ChatMessage msgReq){
+        return mesgService.messageVisible(msgReq);
     }
 
 
@@ -115,11 +109,15 @@ public class MesgController {
 
 
 
-    @PostMapping("/addConvToMesg/{msgId}")
+    @PostMapping("/addConvToMesg/:{msgId}")
     public ChatMessage addConvToMesaage(String msgId , Conversation conv){
         return mesgService.addConvToMesaage(msgId, conv);
     }
 
+    @GetMapping("/chatuser/{id_user}")
+    public List<ChatMessage> getMessagesUser(@PathVariable String id_user) {
+        return chatMessageRepository.findByUserId(id_user);
+    }
 
 
 

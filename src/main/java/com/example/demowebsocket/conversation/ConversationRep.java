@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface ConversationRep extends MongoRepository<Conversation, String> {
-    List<Conversation> findConversationById(String Id);
+    List<Conversation> findConversationById(String id);
 }

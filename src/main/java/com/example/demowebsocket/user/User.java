@@ -3,6 +3,8 @@ package com.example.demowebsocket.user;
 import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.mesg.ChatMessage;
 import com.example.demowebsocket.token.Token;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,15 +38,18 @@ public class User implements UserDetails {
   private String password;
 
 
-  private List<Conversation> conversation;
-
+  @DBRef
+  private List<Conversation> conversation = new ArrayList<>();
 
   @DBRef
   private List<ChatMessage> chatMessages = new ArrayList<>();
+
   private String role;
 
   private List<Token> tokens;
-
+  public List<ChatMessage> getChatMessages() {
+    return chatMessages;
+  }
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return null;
@@ -57,7 +62,7 @@ public class User implements UserDetails {
 
   @Override
   public String getUsername() {
-    return firstname;
+    return email;
   }
 
   @Override

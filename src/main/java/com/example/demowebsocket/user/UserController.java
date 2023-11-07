@@ -47,9 +47,9 @@ public class UserController {
 
 
 
-    @PutMapping("/updateUser/{iduser}")
-    public User updateUser(@PathVariable String iduser ,@RequestBody User userRequest){
-        return service.updateUser(iduser,userRequest);
+    @PutMapping("/updateUser")
+    public User updateUser(User userRequest){
+        return service.updateUser(userRequest);
     }
 
     @PostMapping("/addUserToConv")
@@ -57,9 +57,9 @@ public class UserController {
         return service.addUserToConversation(userId, conversationId);
     }
 
-    @DeleteMapping("/deleteUser/{userId}")
+    @DeleteMapping("/deleteUser/{id}")
     public void deleteUser(@PathVariable String userId){
-        service.deleteUserById(userId);
+        service.deleteUser(userId);
     }
 
 

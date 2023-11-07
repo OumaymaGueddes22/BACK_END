@@ -1,6 +1,8 @@
 package com.example.demowebsocket.auth;
 
 import com.example.demowebsocket.config.JwtService;
+import com.example.demowebsocket.conversation.Conversation;
+import com.example.demowebsocket.conversation.ConversationRep;
 import com.example.demowebsocket.token.Token;
 import com.example.demowebsocket.token.TokenRepository;
 import com.example.demowebsocket.token.TokenType;
@@ -19,34 +21,67 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
   private final UserRepository repository;
   private final TokenRepository tokenRepository;
+  private final ConversationRep conversationRep;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
   public AuthenticationResponse register(RegisterRequest request) {
     var user = User.builder()
-        .firstname(request.getFirstname())
-        .lastname(request.getLastname())
-        .email(request.getEmail())
-        .password(passwordEncoder.encode(request.getPassword()))
-        .role(request.getRole())
+            .firstname(request.getFirstname())
+            .lastname(request.getLastname())
+            .email(request.getEmail())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .role(request.getRole())
             .phoneNumber(request.getPhoneNumber())
-        .build();
+            .build();
+
+    user.setConversation(new ArrayList<>());
+
     var savedUser = repository.save(user);
-    var jwtToken = jwtService.generateToken(user);
-    var refreshToken = jwtService.generateRefreshToken(user);
+
+    var paymentConversation = Conversation.builder()
+            .isgroup(false)
+            .typeConv("payment")
+            .user(Collections.singletonList(savedUser))
+            .messages(new ArrayList<>())
+            .build();
+
+    conversationRep.save(paymentConversation);
+
+    var reclamationConversation = Conversation.builder()
+            .isgroup(false)
+            .typeConv("reclamation")
+            .user(Collections.singletonList(savedUser))
+            .messages(new ArrayList<>())
+            .build();
+
+    conversationRep.save(reclamationConversation);
+
+    savedUser.getConversation().add(paymentConversation);
+    savedUser.getConversation().add(reclamationConversation);
+    repository.save(savedUser);
+
+    var jwtToken = jwtService.generateToken(savedUser);
+    var refreshToken = jwtService.generateRefreshToken(savedUser);
+
     saveUserToken(savedUser, jwtToken);
     return AuthenticationResponse.builder()
-        .accessToken(jwtToken)
+            .accessToken(jwtToken)
             .refreshToken(refreshToken)
-        .build();
+            .build();
   }
+
+
+
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
     authenticationManager.authenticate(
