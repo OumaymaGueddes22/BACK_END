@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register</title>
   <link rel="stylesheet" type="text/css" href="css/register.css">
 </head>
 <body>
 <h1>Register</h1>
 
-<form method="post" id="register-form">
+<form method="post" id="register-form" enctype="multipart/form-data">
   <div id="success-message" class="custom-alert-success" style="display: none; color: green;">
     Success
   </div>
@@ -17,12 +19,28 @@
   <input type="text" name="phoneNumber" placeholder="phoneNumber">
   <input type="email" name="email" placeholder="Email">
   <input type="password" name="password" placeholder="Password">
+
+
+    <input Style="width: 170px" #fileInput type="text" class="form-control file-upload-info" disabled="" placeholder="Ajouter image">
+
+
+        <span class="input-group-append">
+          <label class="file-upload-browse btn btn-gradient-primary">
+            Ajouter img
+     <input Style="display: none" type="file" name="file" accept="image/*">
+          </label>
+        </span>
+
+
+
+
   <select name="role">
     <option value="Client">Client</option>
     <option value="ADMIN">Admin</option>
   </select>
   <input type="submit" value="Register">
 </form>
+
 <script src="js/register.js"></script>
 </body>
 </html>

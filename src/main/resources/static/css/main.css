@@ -4,12 +4,9 @@
     box-sizing: border-box;
 }
 
-html,body {
-    height: 100%;
-    overflow: hidden;
-}
 
 body {
+    height: 100%;
     margin: 0;
     padding: 0;
     font-weight: 400;
@@ -149,7 +146,7 @@ button.accent {
     margin-left: auto;
     margin-right: auto;
     background-color: #fff;
-    box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
+
     margin-top: 30px;
     height: calc(100% - 60px);
     max-height: 600px;

@@ -1,21 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <title>Authentication</title>
-  <link rel="stylesheet" type="text/css" href="css/login.css">
+  <title>Chat</title>
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
+  <link href="css/chat.css" rel="stylesheet">
 </head>
-<body>
-<noscript>
-  <h2>Sorry! Your browser doesn't support Javascript</h2>
-</noscript>
 
-<div id="username-page">
+<body>
+
+
+<div id="username-page" class="hidden">
   <div class="username-page-container">
+
     <h1 class="title">Connexion</h1>
+    <div id="errorMessage"  style="text-align: center;display: none; background-color: #f8d7da; color: #721c24;">
+    </div>
     <form id="usernameForm" name="usernameForm">
       <div class="form-group">
-        <input type="text" name="phoneNumber" placeholder="Phone Number" autocomplete="off" class="form-control" />
+        <input type="text" name="identifier" placeholder="Email or Phone Number" autocomplete="off" class="form-control" />
       </div>
       <div class="form-group">
         <input type="password" name="password" placeholder="Password" autocomplete="off" class="form-control" />
@@ -24,31 +30,110 @@
         <button type="submit" class="accent username-submit">Login</button>
       </div>
       <a onclick="window.location.href='register.html'">Register</a>
+      <a style="color: red; position: relative; left: 25px" onclick="window.location.href='Password_Reset.html'">mot de
+        passe oublié</a>
     </form>
   </div>
 </div>
 
-<div id="chat-page" class="hidden">
-  <div class="chat-container">
-    <div class="connecting">
-      Connecting...
-    </div>
-    <ul id="messageArea">
 
-    </ul>
-    <form id="messageForm" name="messageForm">
-      <div class="form-group">
-        <div class="input-group clearfix">
-          <input type="text" id="message" placeholder="Type a message..." autocomplete="off" class="form-control"/>
-          <button type="submit" class="primary">Send</button>
+    <div class="container chat-list1 hidden" >
+      <div class="row clearfix" >
+        <div class="col-lg-12">
+          <div class="card chat-app" style="height: 700px">
+            <div id="plist" class="people-list">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fa fa-search"></i></span>
+                </div>
+                <input type="text" class="form-control" placeholder="Search...">
+              </div>
+              <ul class="list-unstyled chat-list hidden mt-2 mb-0">
+                <li class="clearfix active">
+                  <img src="img/chat.png" class="user-img" alt="avatar">
+                  <div class="about">
+                    <div class="name">Public</div>
+                    <div class="status"> <i class="fa fa-circle offline"></i> left 7 mins ago </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="chat">
+              <div>
+
+
+              </div>
+              <div class="chat-history">
+                <div class="row">
+                <div class="col-lg-12">
+
+                  <div id="chat-page" class="hidden">
+                    <div class="chat-container">
+                      <div class="connecting">
+                        Connecting...
+                      </div>
+                      <button id="loadMoreButton" onclick="loadMoreMessages()" style="display: none;">Voir plus</button>
+                      <ul id="messageArea"></ul>
+                      <form id="messageForm" name="messageForm">
+                        <div class="form-group">
+                          <div class="input-group clearfix">
+                            <div class="col-lg-6 hidden-sm text-right"   Style="position: relative ; left: 420px ; top:55px ">
+                              <div class="input-group">
+    <span class="input-group-append">
+      <label class="file-upload-browse btn btn-gradient-primary">
+        <input style="display: none;" type="file" id="videoInput" accept="video/*">
+        <a class="btn btn-outline-secondary"><i class="fa fa-video-camera"></i></a>
+      </label>
+    </span>
+
+                                <span class="input-group-append">
+      <label class="file-upload-browse btn btn-gradient-primary">
+        <input style="display: none;" type="file" id="imageInput" accept="image/*">
+        <a class="btn btn-outline-primary"><i class="fa fa-image"></i></a>
+      </label>
+    </span>
+
+                                <span class="input-group-append">
+      <label class="file-upload-browse btn btn-gradient-primary">
+        <input style="display: none;" type="file" id="pdfInput" accept=".pdf" />
+        <a class="btn btn-outline-info"><i style="color: red" class="fa fa-file-pdf-o"></i></a>
+      </label>
+    </span>
+                              </div>
+                            </div>
+                            <div class="input-group mb-0">
+                              <div class="input-group-prepend">
+                                <span type="submit" class="input-group-text" onclick="send()"><i class="fa fa-send"></i></span>
+
+                              </div>
+
+
+
+                              <input type="text" id="message" placeholder="Type a message..." autocomplete="off" class="form-control" />
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                </div>
+              </div>
+
+          </div>
         </div>
       </div>
-    </form>
+    </div>
   </div>
-</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+
+<script src="lib/sockjs/sockjs.min.js"></script>
+<script src="lib/sockjs/stomp.min.js"></script>
+<script src="lib/jquery/jquery-1.10.2.min.js"></script>
+<script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="js/chat.js"></script>
 <script src="js/login.js"></script>
 </body>
+
 </html>

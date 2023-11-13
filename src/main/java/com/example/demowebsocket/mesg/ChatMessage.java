@@ -4,7 +4,6 @@ package com.example.demowebsocket.mesg;
 import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -17,26 +16,30 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collection = "Messges")
+@Document(collection = "Messages")
+
 public class ChatMessage {
 
-   @Id
-   private String id;
+    @Id
+    private String id;
     private String txt;
-    //private String userID;
     private MsgType type;
+    private byte[] imageContent;
 
+    private byte[] AudioContent;
+    private byte[] pdfContent;
+
+
+    private byte[] videoContent;
     private Date time;
+
     @JsonBackReference
     @DBRef
     private User user;
-
     private String sender;
-
-    User msgUser;
-
+    private User msgUser;
     private Boolean isDeleted;
-    Conversation msgConv;
-
+    private Conversation msgConv;
+    private String destination;
 
 }

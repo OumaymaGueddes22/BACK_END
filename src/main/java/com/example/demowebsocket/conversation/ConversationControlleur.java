@@ -16,10 +16,10 @@ public class ConversationControlleur {
     @Autowired
     private ConversationService convService;
 
-    @PostMapping("/createConv/{id}")
-    //@ResponseStatus(HttpStatus.CREATED)
-    public Conversation createConversation(@PathVariable String id, @RequestBody Conversation conv){
-        return convService.addConversation(id, conv);
+    @PostMapping("/createConv")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Conversation createConversation(@RequestBody Conversation conv){
+        return convService.addConversation(conv);
     }
 
     @GetMapping("/allConv")

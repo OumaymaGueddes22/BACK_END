@@ -69,3 +69,99 @@ a {
     margin-bottom: 1rem;
     border-radius: 0.25rem;
 }
+
+
+.form-control {
+    border: 2px solid #ccc; /* Add a border */
+    border-radius: 6px; /* Rounded corners */
+    padding: 10px; /* Add some padding */
+    font-size: 16px; /* Increase font size */
+    width: 100%; /* Full width */
+    transition: border-color 0.2s; /* Smooth border transition on focus */
+}
+
+.form-control:focus {
+    border-color: #007BFF; /* Change border color on focus */
+    outline: none; /* Remove default focus outline */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle box shadow on focus */
+}
+
+.text-danger {
+    color: #FF0000; /* Set error text color to red */
+}
+
+
+
+.btn-gradient-primary:not(.btn-gradient-light):hover, .btn-gradient-primary:not(.btn-gradient-light):focus, .btn-gradient-primary:not(.btn-gradient-light):active {
+    color: #ffffff;
+}
+.btn-gradient-primary:not(.btn-gradient-light) {
+    color: #ffffff;
+}
+.btn-gradient-primary:hover {
+    opacity: 0.8;
+}
+
+
+.input-group .btn, .input-group .wizard > .actions a, .wizard > .actions .input-group a, .input-group .swal2-modal .swal2-buttonswrapper .swal2-styled, .swal2-modal .swal2-buttonswrapper .input-group .swal2-styled, .input-group .ajax-upload-dragdrop .ajax-file-upload, .ajax-upload-dragdrop .input-group .ajax-file-upload, .input-group .fc button, .fc .input-group button, .asColorPicker-wrap .btn, .asColorPicker-wrap .wizard > .actions a, .wizard > .actions .asColorPicker-wrap a, .asColorPicker-wrap .swal2-modal .swal2-buttonswrapper .swal2-styled, .swal2-modal .swal2-buttonswrapper .asColorPicker-wrap .swal2-styled, .asColorPicker-wrap .ajax-upload-dragdrop .ajax-file-upload, .ajax-upload-dragdrop .asColorPicker-wrap .ajax-file-upload, .asColorPicker-wrap .fc button, .fc .asColorPicker-wrap button {
+    position: relative;
+    z-index: 2;
+}
+button:not(:disabled), [type=button]:not(:disabled), [type=reset]:not(:disabled), [type=submit]:not(:disabled) {
+    cursor: pointer;
+}
+.btn.active.focus, .btn.active:focus, .btn.focus, .wizard > .actions a.focus, .swal2-modal .swal2-buttonswrapper .focus.swal2-styled, .ajax-upload-dragdrop .focus.ajax-file-upload, .fc button.focus, .btn:active.focus, .btn:active:focus, .btn:focus, .wizard > .actions a:focus, .swal2-modal .swal2-buttonswrapper .swal2-styled:focus, .ajax-upload-dragdrop .ajax-file-upload:focus, button, button:active, button:checked, button:focus, button:hover, button:visited {
+    outline: 0;
+    outline-offset: 0;
+}
+.btn-gradient-primary {
+    width: 120px;
+    height: 46px;
+    background: linear-gradient(to right, #5b2575, #9a55ff);
+    border: 0;
+    -webkit-transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease;
+}
+
+
+.input-group-append{
+    position: relative;
+    top: -5px;
+    right: 50px;
+
+
+
+
+}
+
+
+
+.file-upload-info{
+    background-color: #ffffff;
+    width: 930px;
+}
+
+
+.btn {
+    background-color: #0080FF;
+    color: #FFFFFF;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    position: relative;
+    top: 5px;
+    cursor: pointer;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    position: relative;
+
+}
+
+.btn:hover {
+    background-color: #0070FF;
+}
+
+
+
+
+

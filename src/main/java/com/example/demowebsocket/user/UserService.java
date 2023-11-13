@@ -7,6 +7,8 @@ import com.example.demowebsocket.mesg.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,11 @@ public class UserService {
     @Autowired
     private  UserRepository repository;
 
+    private final JavaMailSender mailSender;
+
+    public User findByEmail(String email) {
+        return repository.findByEmail(email);
+    }
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -46,6 +53,50 @@ public class UserService {
 
         // save the new password
         repository.save(user);
+    }
+    public void sendPasswordResetCode(String email) {
+        User user = findByEmail(email);
+        if (user != null) {
+            String resetCode = generateRandomCode();
+
+            user.setResetCode(resetCode);
+            repository.save(user);
+
+            Thread emailThread = new Thread(() -> {
+                try {
+                    SimpleMailMessage mailMessage = new SimpleMailMessage();
+                    mailMessage.setTo(user.getEmail());
+                    mailMessage.setSubject("Réinitialisation de mot de passe");
+                    mailMessage.setText("Votre code de réinitialisation est : " + resetCode);
+                    mailSender.send(mailMessage);
+                } catch (Exception e) {
+
+                    throw new RuntimeException("Erreur lors de l'envoi de l'e-mail de réinitialisation.");
+                }
+            });
+
+            emailThread.start();
+        } else {
+            throw new RuntimeException("Utilisateur non trouvé pour l'adresse e-mail fournie.");
+        }
+    }
+
+
+    public void resetPassword(String email, String resetCode, String newPassword) {
+        User user = findByEmail(email);
+        if (user != null && resetCode.equals(user.getResetCode())) {
+            // Réinitialiser le mot de passe
+            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setResetCode(null);
+            repository.save(user);
+        } else {
+            throw new RuntimeException("Code de réinitialisation invalide");
+        }
+    }
+
+    private String generateRandomCode() {
+        int randomCode = (int) (Math.random() * 900000) + 100000;
+        return String.valueOf(randomCode);
     }
 
     public User addUser(User user){
@@ -90,18 +141,25 @@ public class UserService {
 
     }
 
-    public User addConversationToUser(String idUser, Conversation conv){
-        conv=convRep.save(conv);
-        User user=repository.findById(idUser).get();
-        List<Conversation>conversations=new ArrayList<>();
-        if(user.getConversation()!=null){
-            conversations=user.getConversation();
+    public User addConversationToUser(String idUser, Conversation conv) {
+        conv = convRep.save(conv);
+
+        User user = repository.findById(idUser).orElse(null);
+
+        List<User> users = new ArrayList<>();
+        if (conv.getUser() != null) {
+            users = conv.getUser();
         }
-        conversations.add(conv);
-        user.setConversation(conversations);
-        repository.save(user);
+        users.add(user);
+        conv.setUser(users);
+
+        conv.setFirstNameUser(user.getFirstname());
+
+        convRep.save(conv);
+
         return user;
     }
+
     //addUserToConveration
     public User addUserToConversation(String userId, String conversationId) {
         User user = repository.findById(userId).orElse(null);

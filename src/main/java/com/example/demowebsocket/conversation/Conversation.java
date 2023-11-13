@@ -29,12 +29,14 @@ public class Conversation {
 
 
     @JsonBackReference
-    @DBRef
-    private List<User> user ;
 
+    private List<User> user ;
 
     //lezem id message yetsab fel base
     private List<ChatMessage> messages;
+
+    private String firstNameUser;
+
 
 
 

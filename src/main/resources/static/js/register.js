@@ -1,33 +1,21 @@
 const registerForm = document.getElementById("register-form");
 const successMessage = document.getElementById("success-message");
+const fileInput = document.querySelector('input[type="file"]');
 
 registerForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const firstname = registerForm.querySelector("input[name=firstname]").value;
-    const lastname = registerForm.querySelector("input[name=lastname]").value;
-    const phoneNumber = registerForm.querySelector("input[name=phoneNumber]").value;
-    const email = registerForm.querySelector("input[name=email]").value;
-    const password = registerForm.querySelector("input[name=password]").value;
-    const role = registerForm.querySelector("select[name=role]").value;
+    const formData = new FormData(registerForm);
 
     try {
         const response = await fetch("/api/v1/auth/register", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                firstname,
-                lastname,
-                phoneNumber,
-                email,
-                password,
-                role,
-            }),
+            body: formData,
         });
 
         if (response.ok) {
+            const uploadedFileName = fileInput.files[0]?.name || 'No file selected';
+            successMessage.innerHTML = `Success`;
             successMessage.style.display = "block";
             registerForm.reset();
         } else {
@@ -37,4 +25,9 @@ registerForm.addEventListener("submit", async (event) => {
     } catch (error) {
         console.error("Error:", error);
     }
+});
+
+fileInput.addEventListener('change', () => {
+    const fileName = fileInput.files[0]?.name || 'No file selected';
+    document.querySelector('.file-upload-info').value = fileName;
 });

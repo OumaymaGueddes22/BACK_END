@@ -4,6 +4,9 @@ import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.mesg.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +49,18 @@ public class UserController {
     }
 
 
+    //affiche contenu image
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getUserImage(@PathVariable String id) {
+        User user = service.findById(id);
+        if (user != null && user.getImage() != null) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            return new ResponseEntity<>(user.getImage(), headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
     @PutMapping("/updateUser")
     public User updateUser(User userRequest){
@@ -77,7 +92,21 @@ public class UserController {
 
 
 
+    @PostMapping("/request-code")
+    public ResponseEntity<String> requestCode(@RequestParam String email) {
+        service.sendPasswordResetCode(email);
+        return ResponseEntity.ok("Un code de réinitialisation a été envoyé à votre e-mail.");
+    }
 
+    @PostMapping("/reset")
+    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String resetCode, @RequestParam String newPassword) {
+        try {
+            service.resetPassword(email, resetCode, newPassword);
+            return ResponseEntity.ok("Mot de passe réinitialisé avec succès.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Échec de réinitialisation du mot de passe : " + e.getMessage());
+        }
+    }
 
 }
 
