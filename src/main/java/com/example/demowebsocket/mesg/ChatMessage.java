@@ -24,6 +24,7 @@ public class ChatMessage {
     private String id;
     private String txt;
     private MsgType type;
+    private String typeMessage;
     private byte[] imageContent;
 
     private byte[] AudioContent;

@@ -60,6 +60,7 @@ public class MesgController {
             chatMessage.setIsDeleted(true);
 
             if (imageData != null) {
+                chatMessage.setTypeMessage("Image");
                 String[] imageParts = imageData.split(",");
                 if (imageParts.length == 2) {
                     String base64Image = imageParts[1];
@@ -68,6 +69,7 @@ public class MesgController {
                 }
             }
             if (videoData != null) {
+                chatMessage.setTypeMessage("video");
                 try {
                     String[] videoParts = videoData.split(",");
                     if (videoParts.length == 2) {
@@ -82,6 +84,7 @@ public class MesgController {
             }
 
             if (pdfData != null) {
+                chatMessage.setTypeMessage("File");
                 try {
                     String[] pdfParts = pdfData.split(",");
                     if (pdfParts.length == 2) {
