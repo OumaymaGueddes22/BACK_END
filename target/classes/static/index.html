@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>Chat avec images</title>
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+<noscript>
+  <h2>Sorry! Your browser doesn't support JavaScript</h2>
+</noscript>
+
+<div id="username-page">
+  <div class="username-page-container">
+    <h1 class="title">Connexion</h1>
+    <form id="usernameForm" name="usernameForm">
+      <div class="form-group">
+        <input type="text" name="phoneNumber" placeholder="Phone Number" autocomplete="off" class="form-control" />
+      </div>
+      <div class="form-group">
+        <input type="password" name="password" placeholder="Password" autocomplete="off" class="form-control" />
+      </div>
+      <div class="form-group">
+        <button type="submit" class="accent username-submit">Login</button>
+      </div>
+      <a onclick="window.location.href='register.html'">Register</a>
+      <a style="color: red; position: relative; left: 25px" onclick="window.location.href='Password_Reset.html'">mot de passe oublié</a>
+    </form>
+  </div>
+</div>
+
+<div id="chat-page" class="hidden">
+  <div class="chat-container">
+    <div class="connecting">
+      Connecting...
+    </div>
+    <ul id="messageArea"></ul>
+    <form id="messageForm" name="messageForm">
+      <div class="form-group">
+        <div class="input-group clearfix">
+          <input type="text" id="message" placeholder="Type a message..." autocomplete="off" class="form-control"/>
+          <div class="input-group">
+            <span class="input-group-append">
+              <label class="file-upload-browse btn btn-gradient-primary">
+                <input style="display: none;" type="file" id="imageInput" accept="image/*" >
+                <img style="height: 40px; width: 40px; position: relative; right: 20px" src="cam.jpg" alt="Camera Icon">
+              </label>
+               <label class="file-upload-browse btn btn-gradient-primary">
+                <input style="display: none;" type="file" id="videoInput" accept="video/*" >
+                <img style="height: 40px; width: 40px; position: relative; right: 20px" src="video.png" alt="video Icon">
+            </span>
+          </div>
+          <button type="submit" class="primary">Send</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<scrip src="js/main.js"></scrip>
+<script src="js/login.js"></script>
+</body>
+</html>
