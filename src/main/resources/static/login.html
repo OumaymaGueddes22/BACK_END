@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />
+    <link href="css/chat.css" rel="stylesheet">
+</head>
+<body>
+<div id="username-page" class="hidden">
+    <div class="username-page-container">
+
+        <h1 class="title">Connexion</h1>
+        <div id="errorMessage"  style="text-align: center;display: none; background-color: #f8d7da; color: #721c24;">
+        </div>
+        <form id="usernameForm" name="usernameForm">
+            <div class="form-group">
+                <input type="text" name="identifier" placeholder="Email or Phone Number" autocomplete="off" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Password" autocomplete="off" class="form-control" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="accent username-submit">Login</button>
+            </div>
+            <a onclick="window.location.href='register.html'">Register</a>
+            <a style="color: red; position: relative; left: 25px" onclick="window.location.href='Password_Reset.html'">mot de
+                passe oublié</a>
+        </form>
+    </div>
+</div>
+<script src="lib/sockjs/sockjs.min.js"></script>
+<script src="lib/sockjs/stomp.min.js"></script>
+<script src="lib/jquery/jquery-1.10.2.min.js"></script>
+<script src="lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>
