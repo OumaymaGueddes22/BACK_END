@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -52,25 +51,23 @@ public class UserController {
 
     //affiche contenu image
     @GetMapping("/{id}/image")
-    public ResponseEntity<String> getUserImageAsString(@PathVariable String id) {
+    public ResponseEntity<byte[]> getUserImage(@PathVariable String id) {
         User user = service.findById(id);
-        if (user != null && user.getImage() != null && !user.getImage().isEmpty()) {
-            String imageData = user.getImage();
-
+        if (user != null && user.getImage() != null) {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN); // Set the appropriate content type
-
-            return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            return new ResponseEntity<>(user.getImage(), headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     @PutMapping("/updateUser")
     public User updateUser(User userRequest){
         return service.updateUser(userRequest);
     }
 
-    @PostMapping("/addUserToConv/{}")
+    @PostMapping("/addUserToConv")
     public User addUserToConversation(String userId, String conversationId){
         return service.addUserToConversation(userId, conversationId);
     }

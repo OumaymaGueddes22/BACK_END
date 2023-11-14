@@ -160,8 +160,3 @@ button:not(:disabled), [type=button]:not(:disabled), [type=reset]:not(:disabled)
 .btn:hover {
     background-color: #0070FF;
 }
-
-
-
-
-

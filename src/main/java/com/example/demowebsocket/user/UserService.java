@@ -39,19 +39,15 @@ public class UserService {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
-        // check if the current password is correct
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new IllegalStateException("Wrong password");
         }
-        // check if the two new passwords are the same
         if (!request.getNewPassword().equals(request.getConfirmationPassword())) {
             throw new IllegalStateException("Password are not the same");
         }
 
-        // update the password
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
-        // save the new password
         repository.save(user);
     }
     public void sendPasswordResetCode(String email) {
@@ -85,7 +81,6 @@ public class UserService {
     public void resetPassword(String email, String resetCode, String newPassword) {
         User user = findByEmail(email);
         if (user != null && resetCode.equals(user.getResetCode())) {
-            // Réinitialiser le mot de passe
             user.setPassword(passwordEncoder.encode(newPassword));
             user.setResetCode(null);
             repository.save(user);
@@ -141,23 +136,16 @@ public class UserService {
 
     }
 
-
-    public User addConversationToUser(String idUser, Conversation conv) {
-        conv = convRep.save(conv);
-
-        User user = repository.findById(idUser).orElse(null);
-
-        List<User> users = new ArrayList<>();
-        if (conv.getUser() != null) {
-            users = conv.getUser();
+    public User addConversationToUser(String idUser, Conversation conv){
+        conv=convRep.save(conv);
+        User user=repository.findById(idUser).get();
+        List<Conversation>conversations=new ArrayList<>();
+        if(user.getConversation()!=null){
+            conversations=user.getConversation();
         }
-        users.add(user);
-        conv.setUser(users);
-
-        conv.setFirstNameUser(user.getFirstname());
-
-        convRep.save(conv);
-
+        conversations.add(conv);
+        user.setConversation(conversations);
+        repository.save(user);
         return user;
     }
     //addUserToConveration
