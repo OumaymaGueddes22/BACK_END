@@ -18,19 +18,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         //difference bewteen wss and ws
         registry.addEndpoint("/ws").withSockJS();
     }
-    @Override
-    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.setMessageSizeLimit(345516545); // Set the appropriate message size limit
-    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         //enable an application distnation prefix
         registry.setApplicationDestinationPrefixes("/app");
         registry.enableSimpleBroker("/topic");
-
     }
 
-
-
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.setMessageSizeLimit(1024 * 1024); // Set the maximum message size (1 MB in this example)
+    }
 }

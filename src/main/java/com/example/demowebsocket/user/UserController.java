@@ -8,11 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -53,28 +51,27 @@ public class UserController {
 
     //affiche contenu image
     @GetMapping("/{id}/image")
-    public ResponseEntity<String> getUserImageAsString(@PathVariable String id) {
+    public ResponseEntity<byte[]> getUserImage(@PathVariable String id) {
         User user = service.findById(id);
-        if (user != null && user.getImage() != null && !user.getImage().isEmpty()) {
-            String imageData = user.getImage();
-
+        if (user != null && user.getImage() != null) {
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN); // Set the appropriate content type
-
-            return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            return new ResponseEntity<>(user.getImage(), headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     @PutMapping("/updateUser")
     public User updateUser(User userRequest){
         return service.updateUser(userRequest);
     }
 
-    @PostMapping("/addUserToConv/{idConv}/{idUser}")
-    public Conversation addUserToConversation(@PathVariable String idConv, @PathVariable String idUser) {
-        return service.addUserToConversation(idConv, idUser);
+    @PostMapping("/addUserToConv")
+    public User addUserToConversation(String userId, String conversationId){
+        return service.addUserToConversation(userId, conversationId);
     }
+
     @DeleteMapping("/deleteUser/{id}")
     public void deleteUser(@PathVariable String userId){
         service.deleteUser(userId);
@@ -82,9 +79,9 @@ public class UserController {
 
 
     //addConvToUser
-    @PostMapping("/addConvToUser/{idUser}/{idConv}")
-    public User addConversationToUser(@PathVariable String idUser,@PathVariable String idConv){
-        return service.addConversationToUser(idUser, idConv);
+    @PostMapping("/addConvToUser/{idUser}")
+    public User addConversationToUser(@PathVariable("idUser") String idUser,@RequestBody Conversation conv){
+        return service.addConversationToUser(idUser, conv);
     }
 
     //addMsgToUser
