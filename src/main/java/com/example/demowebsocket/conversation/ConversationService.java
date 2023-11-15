@@ -3,6 +3,7 @@ package com.example.demowebsocket.conversation;
 
 import com.example.demowebsocket.mesg.ChatMessage;
 import com.example.demowebsocket.mesg.ChatMessageRepository;
+import com.example.demowebsocket.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +14,18 @@ import java.util.UUID;
 @Service
 public class ConversationService {
 
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Autowired
     private ChatMessageRepository chatRep;
     @Autowired
     private ConversationRep conversationRep;
 
-    public Conversation addConversation(Conversation cver){
+    public Conversation addConversation(String userId,Conversation cver){
         cver.setId(UUID.randomUUID().toString().split("-")[0]);
+        cver.setUserCreate(userRepository.findById(userId).toString());
         return  conversationRep.save(cver);
     }
 

@@ -17,5 +17,5 @@ public class RegisterRequest {
   private String password;
   private String phoneNumber;
   private String role;
-  private byte[] image;
+  private String image;
 }

@@ -4,6 +4,9 @@ import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.user.User;
 import com.example.demowebsocket.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -34,9 +37,11 @@ public class MesgController {
 
     @MessageMapping("/mesg.sendMessage")
     @SendTo("/topic/public")
-    public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor , @RequestParam("image") MultipartFile image, @RequestParam("video") MultipartFile video) {
+    public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor , @RequestParam("image") MultipartFile image) {
         String senderFirstName = chatMessage.getSender();
+        String recieverID =chatMessage.getReciever();
         headerAccessor.getSessionAttributes().put("username", senderFirstName);
+        headerAccessor.getSessionAttributes().put("reciever", recieverID);
         return chatMessage;
     }
 
@@ -47,8 +52,8 @@ public class MesgController {
             @Payload ChatMessage chatMessage,
             @DestinationVariable String userId,
             @RequestParam(value = "imageData", required = false) String imageData,
-            @RequestParam(value = "videoData", required = false) String videoData
-    ) {
+            @RequestParam(value = "videoData", required = false) String videoData,
+            @RequestParam(value = "pdfData", required = false) String pdfData) {
         User user = userRepository.findById(userId).orElse(null);
 
         if (user != null) {
@@ -57,38 +62,44 @@ public class MesgController {
             chatMessage.setIsDeleted(true);
 
             if (imageData != null) {
-                try {
-                    String[] imageParts = imageData.split(",");
-                    if (imageParts.length == 2) {
-                        String base64Image = imageParts[1];
-                        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
-                        chatMessage.setTypeMessage("Image");
-                        chatMessage.setImageContent(imageBytes);
-                    }
-                } catch (IllegalArgumentException e) {
-                    System.err.println("Error decoding image: " + e.getMessage());
-                    return null;
+                chatMessage.setTypeMessage("Image");
+                String[] imageParts = imageData.split(",");
+                if (imageParts.length == 2) {
+                    String base64Image = imageParts[1];
+                    byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+                    chatMessage.setImageContent(imageBytes);
                 }
             }
-
             if (videoData != null) {
-                System.out.println("Received video data: " + videoData);
+                chatMessage.setTypeMessage("video");
                 try {
-                    String[] videoDatas = videoData.split(",");
-                    if (videoDatas.length == 2) {
-                        String base64Video = videoDatas[1];
+                    String[] videoParts = videoData.split(",");
+                    if (videoParts.length == 2) {
+                        String base64Video = videoParts[1];
                         byte[] videoBytes = Base64.getDecoder().decode(base64Video);
-
-                        // Set the type and content in the chatMessage
-                        chatMessage.setTypeMessage("Video");
                         chatMessage.setVideoContent(videoBytes);
                     }
                 } catch (IllegalArgumentException e) {
                     System.err.println("Error decoding video: " + e.getMessage());
-                    e.printStackTrace();
                     return null;
                 }
             }
+
+            if (pdfData != null) {
+                chatMessage.setTypeMessage("File");
+                try {
+                    String[] pdfParts = pdfData.split(",");
+                    if (pdfParts.length == 2) {
+                        String base64Pdf = pdfParts[1];
+                        byte[] pdfBytes = Base64.getDecoder().decode(base64Pdf);
+                        chatMessage.setPdfContent(pdfBytes);
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Error decoding PDF: " + e.getMessage());
+                    return null;
+                }
+            }
+            chatMessage.setDestination("public");
             chatMessageRepository.save(chatMessage);
             user.getChatMessages().add(chatMessage);
             userRepository.save(user);
@@ -99,35 +110,63 @@ public class MesgController {
 
 
 
-
-    /*@PostMapping("/api/upload-chat-image/{userId}")
-    public ResponseEntity<String> uploadChatImage(
-            @PathVariable String userId,
-            @RequestParam("image") MultipartFile image) {
+    /*@MessageMapping("/chat.send/{userId}")
+    @SendTo("/topic/public")
+    public ChatMessage sendMessage(
+            @Payload ChatMessage chatMessage,
+            @DestinationVariable String userId,
+            @RequestParam(value = "imageData", required = false) String imageData,
+            @RequestParam(value = "videoData", required = false) String videoData,
+            @RequestParam(value = "audioData", required = false) String audioData) {
         User user = userRepository.findById(userId).orElse(null);
 
         if (user != null) {
-            ChatMessage chatMessage = new ChatMessage();
             chatMessage.setTime(new Date());
             chatMessage.setUser(user);
             chatMessage.setIsDeleted(true);
 
-            try {
-                chatMessage.setImage(image.getBytes()); // Store image bytes in your ChatMessage entity
-                chatMessageRepository.save(chatMessage);
-                user.getChatMessages().add(chatMessage);
-                userRepository.save(user);
-
-                return ResponseEntity.ok("Image uploaded and associated with the chat message successfully.");
-            } catch (IOException e) {
-                // Handle the exception, e.g., return an error response
-                return ResponseEntity.badRequest().body("Failed to upload the image.");
+            if (imageData != null) {
+                String[] imageParts = imageData.split(",");
+                if (imageParts.length == 2) {
+                    String base64Image = imageParts[1];
+                    byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+                    chatMessage.setImageContent(imageBytes);
+                }
             }
-        } else {
-            // Handle the case where the user is not found, e.g., return an error response
-            return ResponseEntity.badRequest().body("User not found.");
+
+            if (videoData != null) {
+                String[] videoParts = videoData.split(",");
+                if (videoParts.length == 2) {
+                    String base64Video = videoParts[1];
+                    byte[] videoBytes = Base64.getDecoder().decode(base64Video);
+                    chatMessage.setVideoContent(videoBytes);
+                }
+            }
+
+            if (audioData != null) {
+                try {
+                    String[] audioParts = audioData.split(",");
+                    if (audioParts.length == 2) {
+                        String base64Audio = audioParts[1];
+                        byte[] audioBytes = Base64.getDecoder().decode(base64Audio);
+                        chatMessage.setAudioContent(audioBytes);
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Error decoding audio: " + e.getMessage());
+                    return null;
+                }
+            }
+
+            chatMessageRepository.save(chatMessage);
+            user.getChatMessages().add(chatMessage);
+            userRepository.save(user);
+
+            return chatMessage;
         }
+
+        return null; // Vous pouvez retourner null ou gérer d'autres cas d'erreur ici
     }*/
+
 
     @PostMapping("/createMsg")
     @ResponseStatus(HttpStatus.CREATED)
@@ -184,12 +223,32 @@ public class MesgController {
     public ChatMessage addConvToMesaage(String msgId , Conversation conv){
         return mesgService.addConvToMesaage(msgId, conv);
     }
+    /*@GetMapping("/getMessagesUser/{id_user}")
+    public Page<ChatMessage> getMessagesUser(@PathVariable String id_user, Pageable pageable) {
+        return chatMessageRepository.findByUserId(id_user, pageable);
+    }*/
 
-    @GetMapping("/chatuser/{id_user}")
+   /* @GetMapping("/getMessagesUser/{id_user}")
     public List<ChatMessage> getMessagesUser(@PathVariable String id_user) {
         return chatMessageRepository.findByUserId(id_user);
+    }*/
+
+    @GetMapping("/getMessagesUser/{userId}/{destination}")
+    public List<ChatMessage> getMessagesUser(
+            @PathVariable String userId,
+            @PathVariable String destination,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize) {
+
+        int startIndex = page - 1;
+        if (startIndex < 0) {
+            startIndex = 0;
+        }
+
+        return chatMessageRepository.findByUserIdOrDestinationOrderByTimeDesc(userId, destination, PageRequest.of(startIndex, pageSize));
     }
 
 
 
 }
+
