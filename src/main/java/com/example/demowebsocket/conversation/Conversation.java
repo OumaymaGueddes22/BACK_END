@@ -27,14 +27,19 @@ public class Conversation {
 
     private String typeConv;
 
-
+//lezem user bel ID
     @JsonBackReference
-    @DBRef
-    private List<User> user ;
+    private List<String> userId ;
+    private String userCreate;
 
     //lezem id message yetsab fel base
+
     private List<ChatMessage> messages;
 
+    private String firstNameUser;
 
 
+    public List<String> getUser() {
+        return userId;
+    }
 }
