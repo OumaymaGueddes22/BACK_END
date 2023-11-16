@@ -27,6 +27,7 @@ public class Conversation {
 
     private String typeConv;
 
+    private String userCreate;
 //lezem user bel ID
     @JsonBackReference
     private List<User> user ;

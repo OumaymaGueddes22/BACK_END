@@ -18,8 +18,8 @@ public class ConversationControlleur {
 
     @PostMapping("/createConv")
     @ResponseStatus(HttpStatus.CREATED)
-    public Conversation createConversation(@RequestBody Conversation conv){
-        return convService.addConversation(conv);
+    public Conversation createConversation(@PathVariable String id ,@RequestBody Conversation conv){
+        return convService.addConversation(id,conv);
     }
 
     @GetMapping("/allConv")

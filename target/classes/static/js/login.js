@@ -298,7 +298,7 @@ async function checkToken() {
 
 function send(event) {
     var authResponse = JSON.parse(localStorage.getItem("authResponse"));
-    var firstname = authResponse.firstname;
+    var fullName = authResponse.fullName;
     var userId = authResponse.id;
 
     var txtContent = messageInput.value.trim();
@@ -309,7 +309,7 @@ function send(event) {
     if ((txtContent || imageFileInput.files.length > 0 || videoFileInput.files.length > 0 || pdfFileInput.files.length > 0) && stompClient) {
         var chatMessage = {
             txt: txtContent,
-            sender: firstname,
+            sender: fullName,
             type: "CHAT"
         };
 
@@ -510,12 +510,12 @@ function initFunction() {
         var authResponse = JSON.parse(localStorage.getItem("authResponse"));
         var senderId = authResponse.id;
 
-        var firstname = authResponse.firstname;
+        var fullName = authResponse.fullName;
 
         console.log("senderId:", senderId);
 
         var chatMessage = {
-            sender: firstname,
+            sender: fullName,
             type: "CHAT"
         };
 
