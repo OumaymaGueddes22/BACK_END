@@ -76,7 +76,7 @@ public class UserController {
     public Conversation addUserToConversation(@PathVariable String idConv, @PathVariable String idUser) {
         return service.addUserToConversation(idConv, idUser);
     }
-    @DeleteMapping("/deleteUser/{id}")
+    @DeleteMapping("/deleteUser/{userId}")
     public void deleteUser(@PathVariable String userId){
         service.deleteUser(userId);
     }

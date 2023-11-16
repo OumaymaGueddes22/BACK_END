@@ -23,6 +23,8 @@ import java.util.UUID;
 public class UserService {
 
     @Autowired
+    private ConversationRep convrep;
+    @Autowired
     private ChatMessageRepository chatRep;
     @Autowired
     private ConversationRep convRep;
@@ -239,8 +241,16 @@ public class UserService {
 
 
     public void deleteUser(String userId){
+
         repository.deleteById(userId);
 
+        // Remove the user from the conversations
+        List<Conversation> conversations = convrep.findByUserId(userId);
+        for (Conversation conversation : conversations) {
+            List<User> users = conversation.getUser();
+            users.removeIf(user -> user.getId().equals(userId));
+            convrep.save(conversation);
+        }
     }
 
     public User findUserByUsername(String username) {

@@ -6,13 +6,19 @@ registerForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const formData = new FormData(registerForm);
+    const fileInput = document.querySelector('input[type="file"]');
 
+    // Check if a file is selected before adding it to the formData
+    if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    }
 
     try {
         const response = await fetch("/api/v1/auth/register", {
             method: "POST",
             body: formData,
         });
+
         const plainFormData = {};
         formData.forEach((value, key) => {
             plainFormData[key] = value;
@@ -31,6 +37,11 @@ registerForm.addEventListener("submit", async (event) => {
     } catch (error) {
         console.error("Error:", error);
     }
+});
+
+fileInput.addEventListener('change', () => {
+    const fileName = fileInput.files[0]?.name || 'No file selected';
+    document.querySelector('.file-upload-info').value = fileName;
 });
 
 fileInput.addEventListener('change', () => {

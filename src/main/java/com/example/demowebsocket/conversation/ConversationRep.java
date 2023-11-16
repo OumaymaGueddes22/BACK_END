@@ -9,4 +9,5 @@ import java.util.List;
 public interface ConversationRep extends MongoRepository<Conversation, String> {
     List<Conversation> findConversationById(String id);
     Conversation findConversationByTypeConv(String type);
+    List<Conversation> findByUserId(String userId);
 }

@@ -40,22 +40,30 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public Pair<AuthenticationResponse, User> register(RegisterRequest request, MultipartFile file) {
+    public AuthenticationResponse register(RegisterRequest request) {
 
-        String filename = storage.CreateNameCv(file);
-        storage.store(file, filename);
-        request.setImage(filename);
-
+        String filename = null;
         var user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .phoneNumber(request.getPhoneNumber())
-                .image(filename) // Ajoutez l'image ici
                 .build();
-
         user.setConversation(new ArrayList<>());
+
+        // Check if file is present before accessing its content
+        if (request.getFile().isPresent()) {
+            MultipartFile file = request.getFile().get();
+            filename = storage.CreateNameCv(file);
+            storage.store(file, filename);
+            request.setImage(filename);
+            user.setImage(filename);
+        }else {
+            request.setImage("no image");
+            user.setImage("no image");
+        }
+
 
         var savedUser = repository.save(user);
         Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
@@ -99,17 +107,21 @@ public class AuthenticationService {
         var refreshToken = jwtService.generateRefreshToken(savedUser);
 
         saveUserToken(savedUser, jwtToken);
-        return Pair.of(
-                AuthenticationResponse.builder()
+        return AuthenticationResponse.builder()
                         .accessToken(jwtToken)
                         .refreshToken(refreshToken)
-                        .build(),
-                savedUser
-        );
+                        .id(user.getId())
+                        .image(user.getImage())
+                        .fullName(user.getFullName())
+                        .phoneNumber(user.getPhoneNumber())
+                        .email(user.getEmail())
+                        .build();
+
+
     }
 
 
-    public Pair<AuthenticationResponse, User> authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getPhoneNumber(), // Utilisez le numéro de téléphone au lieu de l'e-mail
@@ -122,10 +134,15 @@ public class AuthenticationService {
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
-        return Pair.of(AuthenticationResponse.builder()
+        return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .build(),user);
+                .id(user.getId())
+                .image(user.getImage())
+                .fullName(user.getFullName())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .build();
     }
 
 

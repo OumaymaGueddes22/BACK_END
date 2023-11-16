@@ -10,11 +10,11 @@ import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -29,8 +29,15 @@ public class AuthenticationController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<Pair<AuthenticationResponse, User>> register( @ModelAttribute RegisterRequest request,@RequestParam(value = "file",required = false) MultipartFile file) throws IOException {
-        return ResponseEntity.ok(service.register(request,file));
+    public ResponseEntity<AuthenticationResponse> register(@ModelAttribute RegisterRequest request) throws IOException {
+        Optional<MultipartFile> file = request.getFile();
+        if (file.isPresent()) {
+            String filename = storage.CreateNameCv(file.get());
+            storage.store(file.get(), filename);
+            request.setImage(filename);
+        }
+
+        return ResponseEntity.ok(service.register(request));
     }
 
 
@@ -42,7 +49,7 @@ public class AuthenticationController {
                 .body(file);
     }
     @PostMapping("/authenticate")
-    public ResponseEntity<Pair<AuthenticationResponse, User>> authenticate(
+    public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
         return ResponseEntity.ok(service.authenticate(request));
