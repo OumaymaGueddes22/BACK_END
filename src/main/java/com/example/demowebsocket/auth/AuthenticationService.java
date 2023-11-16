@@ -59,28 +59,41 @@ public class AuthenticationService {
         user.setConversation(new ArrayList<>());
 
         var savedUser = repository.save(user);
+        Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
 
-        var paymentConversation = Conversation.builder()
-                .isgroup(false)
-                .typeConv("payment")
-                .user(Collections.singletonList(savedUser))
-                .messages(new ArrayList<>())
-                .build();
+        if (existingPayementConversation != null) {
+            existingPayementConversation.getUser().add(user);
+            conversationRep.save(existingPayementConversation);
+            savedUser.getConversation().add(existingPayementConversation);
+        }else{
+            var paymentConversation = Conversation.builder()
+                    .isgroup(false)
+                    .typeConv("payment")
+                    .user(Collections.singletonList(savedUser))
+                    .messages(new ArrayList<>())
+                    .build();
+            conversationRep.save(paymentConversation);
+            savedUser.getConversation().add(paymentConversation);
+        }
+        Conversation existingReclamationConversation = conversationRep.findConversationByTypeConv("reclamation");
 
-        conversationRep.save(paymentConversation);
+        if (existingReclamationConversation != null) {
+            // If it exists, add the user to the existing conversation
+            existingReclamationConversation.getUser().add(user);
+            conversationRep.save(existingReclamationConversation);
+            savedUser.getConversation().add(existingReclamationConversation);
+        }else{
 
-        var reclamationConversation = Conversation.builder()
-                .isgroup(false)
-                .typeConv("reclamation")
-                .user(Collections.singletonList(savedUser))
-                .messages(new ArrayList<>())
-                .build();
+            var reclamationConversation = Conversation.builder()
+                    .isgroup(false)
+                    .typeConv("reclamation")
+                    .user(Collections.singletonList(savedUser))
+                    .messages(new ArrayList<>())
+                    .build();
 
-        conversationRep.save(reclamationConversation);
-
-        savedUser.getConversation().add(paymentConversation);
-        savedUser.getConversation().add(reclamationConversation);
-
+            conversationRep.save(reclamationConversation);
+            savedUser.getConversation().add(reclamationConversation);
+        }
         repository.save(savedUser);
 
         var jwtToken = jwtService.generateToken(savedUser);

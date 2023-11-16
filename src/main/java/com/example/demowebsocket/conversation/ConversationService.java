@@ -24,6 +24,7 @@ public class ConversationService {
     public Conversation addConversation(String userId,Conversation cver){
         cver.setId(UUID.randomUUID().toString().split("-")[0]);
         cver.setUserCreate(userRepository.findById(userId).toString());
+        cver.getUser().add(userRepository.findById(userId).orElse(null));
         return  conversationRep.save(cver);
     }
 
@@ -38,6 +39,9 @@ public class ConversationService {
     }
 
 
+    public List<Conversation> getConvrersationByUser(String userId){
+        return conversationRep.findByUserId(userId);
+    }
     public Conversation updateConversation(String id, Conversation convRequest) {
         Conversation updateConversation = conversationRep.findById(id)
                 .orElse(null);
