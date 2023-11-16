@@ -1,5 +1,6 @@
 package com.example.demowebsocket.auth;
 
+import com.example.demowebsocket.Service.StorageService;
 import com.example.demowebsocket.config.JwtService;
 import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.conversation.ConversationRep;
@@ -21,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,128 +36,98 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final ConversationRep conversationRep;
     private final PasswordEncoder passwordEncoder;
+    private final StorageService storage;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public Pair<AuthenticationResponse, User> register(RegisterRequest request) {
-        String password = request.getPassword();
+    public Pair<AuthenticationResponse, User> register(RegisterRequest request, MultipartFile file) {
 
-        // Check if password is not null before encoding
-        if (password != null) {
-            var user = User.builder()
-                    .firstname(request.getFirstname())
-                    .lastname(request.getLastname())
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .role(request.getRole())
-                    .phoneNumber(request.getPhoneNumber())
-                    .image(request.getImage()) // Ajoutez l'image ici
-                    .build();
+        String filename = storage.CreateNameCv(file);
+        storage.store(file, filename);
+        request.setImage(filename);
+
+        var user = User.builder()
+                .fullName(request.getFullName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
+                .phoneNumber(request.getPhoneNumber())
+                .image(filename) // Ajoutez l'image ici
+                .build();
 
         user.setConversation(new ArrayList<>());
 
         var savedUser = repository.save(user);
-
         Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
 
-            if (existingPayementConversation != null) {
-                // If it exists, add the user to the existing conversation
-                existingPayementConversation.getUser().add(user.getId());
-                conversationRep.save(existingPayementConversation);
-            } else{
-                var paymentConversation = Conversation.builder()
-                        .isgroup(true)
-                        .typeConv("payment")
-                        .userId(Collections.singletonList(savedUser.getId()))
-                        .messages(new ArrayList<>())
-                        .build();
-                conversationRep.save(paymentConversation);
-                savedUser.getConversation().add(paymentConversation.getId());
+        if (existingPayementConversation != null) {
+            existingPayementConversation.getUser().add(user);
+            conversationRep.save(existingPayementConversation);
+            savedUser.getConversation().add(existingPayementConversation);
+        }else{
+            var paymentConversation = Conversation.builder()
+                .isgroup(false)
+                .typeConv("payment")
+                .user(Collections.singletonList(savedUser))
+                .messages(new ArrayList<>())
+                .build();
+            conversationRep.save(paymentConversation);
+            savedUser.getConversation().add(paymentConversation);
+        }
+        Conversation existingReclamationConversation = conversationRep.findConversationByTypeConv("reclamation");
 
-            }
+        if (existingReclamationConversation != null) {
+            // If it exists, add the user to the existing conversation
+            existingReclamationConversation.getUser().add(user);
+            conversationRep.save(existingReclamationConversation);
+            savedUser.getConversation().add(existingReclamationConversation);
+        }else{
 
-            Conversation existingReclamationConversation = conversationRep.findConversationByTypeConv("reclamation");
+            var reclamationConversation = Conversation.builder()
+                    .isgroup(false)
+                    .typeConv("reclamation")
+                    .user(Collections.singletonList(savedUser))
+                    .messages(new ArrayList<>())
+                    .build();
 
-            if (existingReclamationConversation != null) {
-                // If it exists, add the user to the existing conversation
-                existingReclamationConversation.getUser().add(user.getId());
-                conversationRep.save(existingReclamationConversation);
-            }else{
-                var reclamationConversation = Conversation.builder()
-                        .isgroup(false)
-                        .typeConv("reclamation")
-                        .userId(Collections.singletonList(savedUser.getId()))
-                        .messages(new ArrayList<>())
-                        .build();
-
-                conversationRep.save(reclamationConversation);
-                savedUser.getConversation().add(reclamationConversation.getId());
-
-                repository.save(savedUser);
-            }
-
+            conversationRep.save(reclamationConversation);
+            savedUser.getConversation().add(reclamationConversation);
+        }
+        repository.save(savedUser);
 
         var jwtToken = jwtService.generateToken(savedUser);
         var refreshToken = jwtService.generateRefreshToken(savedUser);
 
         saveUserToken(savedUser, jwtToken);
-            return Pair.of(
-                    AuthenticationResponse.builder()
-                            .accessToken(jwtToken)
-                            .refreshToken(refreshToken)
-                            .build(),
-                    savedUser
-            );
-    }
-        else {
-            // Handle the case where the password is null
-            // This could be throwing an exception or returning an error response
-            // For example:
-            throw new IllegalArgumentException("Password cannot be null");
-        }
-
+        return Pair.of(
+                AuthenticationResponse.builder()
+                        .accessToken(jwtToken)
+                        .refreshToken(refreshToken)
+                        .build(),
+                savedUser
+        );
     }
 
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        Authentication authentication = null;
-
-        if (request.getEmail() != null) {
-
-            authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
-            );
-        } else if (request.getPhoneNumber() != null) {
-
-            authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getPhoneNumber(),
-                            request.getPassword()
-                    )
-            );
-        } else {
-            throw new IllegalArgumentException("Either phone number or email must be provided");
-        }
-
-        var user = repository.findByEmailOrPhoneNumber(request.getEmail(), request.getPhoneNumber())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
+    public Pair<AuthenticationResponse, User> authenticate(AuthenticationRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getPhoneNumber(), // Utilisez le numéro de téléphone au lieu de l'e-mail
+                        request.getPassword()
+                )
+        );
+        var user = repository.findByPhoneNumber(request.getPhoneNumber()) // Utilisez findByPhoneNumber au lieu de findByEmail
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with phone number: " + request.getPhoneNumber()));
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
-
-        return AuthenticationResponse.builder()
+        return Pair.of(AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
-                .id(user.getId())
-                .firstname(user.getFirstname())
-                .phoneNumber(user.getPhoneNumber())
-                .build();
+                .build(),user);
     }
+
 
     private void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
@@ -186,15 +158,13 @@ public class AuthenticationService {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
-        final String userPhone;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
             return;
         }
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
-        userPhone = jwtService.extractUsername(refreshToken);
-        if (userEmail != null || userPhone != null) {
-            var user = this.repository.findByEmailOrPhoneNumber(userEmail, userPhone)
+        if (userEmail != null) {
+            var user = this.repository.findByPhoneNumber(userEmail)
                     .orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
@@ -207,7 +177,8 @@ public class AuthenticationService {
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
-    }
+
+}
 
     public CheckTokenResponse checkToken(String token) {
         CheckTokenResponse response = new CheckTokenResponse();

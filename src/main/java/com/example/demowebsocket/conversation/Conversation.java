@@ -29,8 +29,7 @@ public class Conversation {
 
 //lezem user bel ID
     @JsonBackReference
-    private List<String> userId ;
-    private String userCreate;
+    private List<User> user ;
 
     //lezem id message yetsab fel base
 
@@ -39,7 +38,7 @@ public class Conversation {
     private String firstNameUser;
 
 
-    public List<String> getUser() {
-        return userId;
+    public List<User> getUser() {
+        return user;
     }
 }

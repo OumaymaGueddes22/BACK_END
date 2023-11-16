@@ -118,8 +118,7 @@ public class UserService {
     public User updateUser(User userRequest){
         User updateUser=repository.findById(userRequest.getId()).get();
         updateUser.setEmail(userRequest.getEmail());
-        updateUser.setFirstname(userRequest.getFirstname());
-        updateUser.setLastname(userRequest.getLastname());
+        updateUser.setFullName(userRequest.getFullName());
         updateUser.setPhoneNumber(userRequest.getPhoneNumber());
         updateUser.setPassword(userRequest.getPassword());
         return  repository.save(updateUser);
@@ -140,10 +139,12 @@ public class UserService {
         return user;
 
     }
+
+
+
     public User addConversationToUser(String idConv, String idUser) {
 
         Conversation conv = convRep.findById(idUser).orElse(null);
-        // find the conv depending to the iduser
 
         if (conv == null) {
 
@@ -151,26 +152,25 @@ public class UserService {
         }
 
         User user = repository.findById(idConv).orElse(null);
-        //find user depending on the idConv
 
         if (user != null) {
-            List<String> convuser = conv.getUser(); //bring the user's that are in the conver
+            List<User> convuser = conv.getUser();
 
             if (convuser == null) {
                 convuser = new ArrayList<>();
             }
-            //
-            if (!convuser.contains(user)) {
-                convuser.add(user.getId());
-                conv.setUserId(convuser);
 
-                List<String> conversationUsers = user.getConversation();
+            if (!convuser.contains(user)) {
+                convuser.add(user);
+                conv.setUser(convuser);
+
+                List<Conversation> conversationUsers = user.getConversation();
 
                 if (conversationUsers == null) {
                     conversationUsers = new ArrayList<>();
                 }
 
-                conversationUsers.add(conv.getId());
+                conversationUsers.add(conv);
                 user.setConversation(conversationUsers);
 
                 repository.save(user);
@@ -180,7 +180,6 @@ public class UserService {
 
         return user;
     }
-    //addUserToConveration
     public Conversation addUserToConversation(String idConv, String idUser) {
 
         User user = repository.findById(idUser).orElse(null);
@@ -193,24 +192,24 @@ public class UserService {
         Conversation conversation = convRep.findById(idConv).orElse(null);
 
         if (conversation != null) {
-            List<String> userConversations = user.getConversation();
+            List<Conversation> userConversations = user.getConversation();
 
             if (userConversations == null) {
                 userConversations = new ArrayList<>();
             }
 
             if (!userConversations.contains(conversation)) {
-                userConversations.add(conversation.getId());
+                userConversations.add(conversation);
                 user.setConversation(userConversations);
 
-                List<String> conversationUsers = conversation.getUser();
+                List<User> conversationUsers = conversation.getUser();
 
                 if (conversationUsers == null) {
                     conversationUsers = new ArrayList<>();
                 }
 
-                conversationUsers.add(user.getId());
-                conversation.setUserId(conversationUsers);
+                conversationUsers.add(user);
+                conversation.setUser(conversationUsers);
 
                 repository.save(user);
                 convRep.save(conversation);
@@ -219,6 +218,25 @@ public class UserService {
 
         return conversation;
     }
+
+
+   /* public Conversation addUserToConversation(String userId, String conversationId) {
+        User user = repository.findById(userId).orElse(null);
+        Conversation conversation = convRep.findById(conversationId).orElse(null);
+
+        if (user != null && conversation != null) {
+
+            user.getConversation().add(conversation);
+
+            conversation.getUser().add(user);
+
+            repository.save(user);
+            convRep.save(conversation);
+        }
+
+        return conversation;
+    }*/
+
 
     public void deleteUser(String userId){
         repository.deleteById(userId);

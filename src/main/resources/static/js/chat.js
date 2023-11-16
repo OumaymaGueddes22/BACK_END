@@ -22,7 +22,7 @@ function loadUser() {
 function displayUsers(users){
     users.forEach(user => {
         let userHtml =
-            "<img src=\"data:image/jpeg;base64,"+user.image+"\" class =\"user-img\" alt=\"avatar\">\n" +
+            "<img src=\"/api/v1/auth/users/files/"+user.image+"\" class =\"user-img\" alt=\"avatar\">\n" +
             "<div class=\"about\">\n" +
             "    <div class=\"name\">"+user.firstname+" " +user.lastname+" </div>\n" +
             "    <div class=\"status\"> <i class=\"fa fa-circle online\"></i> online </div>\n" +

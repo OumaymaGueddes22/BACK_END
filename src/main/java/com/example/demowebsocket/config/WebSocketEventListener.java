@@ -37,7 +37,7 @@ public class WebSocketEventListener {
 
             if (user != null) {
                 // Use the user's firstname in the ChatMessage
-                String firstname = user.getFirstname();
+                String firstname = user.getFullName();
                 var chatMessage = ChatMessage.builder()
                         .type(MsgType.LEAVER)
                         .msgUser(user)

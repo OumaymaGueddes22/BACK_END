@@ -1,6 +1,7 @@
 package com.example.demowebsocket.user;
 
 import com.example.demowebsocket.conversation.Conversation;
+import com.example.demowebsocket.conversation.ConversationService;
 import com.example.demowebsocket.mesg.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -71,6 +71,7 @@ public class UserController {
         return service.updateUser(userRequest);
     }
 
+
     @PostMapping("/addUserToConv/{idConv}/{idUser}")
     public Conversation addUserToConversation(@PathVariable String idConv, @PathVariable String idUser) {
         return service.addUserToConversation(idConv, idUser);
@@ -86,6 +87,8 @@ public class UserController {
     public User addConversationToUser(@PathVariable String idUser,@PathVariable String idConv){
         return service.addConversationToUser(idUser, idConv);
     }
+
+
 
     //addMsgToUser
     @PostMapping("/addMsgToUser/{idUser}")

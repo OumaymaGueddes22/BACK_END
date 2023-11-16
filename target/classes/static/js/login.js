@@ -157,6 +157,16 @@ function displayMessages(messages) {
                 videoElement.appendChild(sourceElement);
                 textElement.appendChild(videoElement);
             }
+
+            if (message.audioContent) {
+                var audioElement = document.createElement('audio');
+                audioElement.controls = true;
+                var sourceElement = document.createElement('source');
+                sourceElement.src = "data:audio/mp3;base64," + message.audioContent;
+                sourceElement.type = 'audio/mp3';
+                audioElement.appendChild(sourceElement);
+                textElement.appendChild(audioElement);
+            }
             /* var time = document.createTextNode(message.time);
              textElement.appendChild(time);*/
 
@@ -211,34 +221,36 @@ function onError(error) {
     connectingElement.style.color = 'red';
 }
 
+
+
 loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const identifier = event.target.querySelector("input[name=identifier]").value;
+    const phoneNumber = event.target.querySelector("input[name=phoneNumber]").value;
     const password = event.target.querySelector("input[name=password]").value;
-
-    // Check if the entered value is an email or a phone number
-    const isEmail = identifier.includes("@");
-    const requestData = isEmail
-        ? { email: identifier, password: password }
-        : { phoneNumber: identifier, password: password };
 
     const response = await fetch("/api/v1/auth/authenticate", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify({
+            phoneNumber,
+            password,
+        }),
     });
 
     if (response.ok) {
         const authResponse = await response.json();
         localStorage.setItem("authResponse", JSON.stringify(authResponse));
         connectToWS();
+
     } else {
-        const errorMessageElement = document.getElementById("errorMessage");
-        errorMessageElement.textContent = "Authentication failed. Please check your email or phone number and password.";
-        errorMessageElement.style.display = "block";
+
+        errorMessage.textContent = "Authentification échouée. Veuillez vérifier votre phoneNumber et votre mot de passe.";
+        errorMessage.style.display = "block";
+
+        // Clear the form fields
         event.target.reset();
     }
 });
@@ -393,7 +405,17 @@ function onMessageReceived(payload) {
             pdfElement.width = 320;
             pdfElement.height = 240;
             contentElement.appendChild(pdfElement);
-        } else {
+        }
+        else if (message.audioContent) {
+            var audioElement = document.createElement('audio');
+            audioElement.controls = true;
+            var sourceElement = document.createElement('source');
+            sourceElement.src = "data:audio/mp3;base64," + message.audioContent;
+            sourceElement.type = 'audio/mp3';
+            audioElement.appendChild(sourceElement);
+            contentElement.appendChild(audioElement);
+        }
+        else {
             var messageText = document.createTextNode(message.txt);
             contentElement.appendChild(messageText);
         }
@@ -424,3 +446,95 @@ function getAvatarColor(messageSender) {
 
 usernameForm.addEventListener('submit', connect, true);
 messageForm.addEventListener('submit', send, true);
+
+document.getElementById("startRecording").addEventListener("click", initFunction);
+let isRecording = document.getElementById("isRecording");
+
+function initFunction() {
+    // Function to handle user media
+    async function getUserMedia(constraints) {
+        if (window.navigator.mediaDevices) {
+            return window.navigator.mediaDevices.getUserMedia(constraints);
+        }
+        let legacyApi =
+            navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia;
+        if (legacyApi) {
+            return new Promise(function (resolve, reject) {
+                legacyApi.bind(window.navigator)(constraints, resolve, reject);
+            });
+        } else {
+            alert("user api not supported");
+        }
+    }
+
+    isRecording.textContent = "Recording...";
+
+    let audioChunks = [];
+    let rec;
+
+    function handlerFunction(stream) {
+        rec = new MediaRecorder(stream);
+        rec.start();
+
+        rec.ondataavailable = (e) => {
+            audioChunks.push(e.data);
+
+            if (rec.state == "inactive") {
+                let blob = new Blob(audioChunks, { type: "audio/mp3" });
+                console.log(blob);
+
+                // Convert audio blob to base64
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    const base64data = reader.result.split(',')[1];
+
+                    sendAudioDataToServer(base64data);
+                };
+                reader.readAsDataURL(blob);
+            }
+        };
+    }
+
+    function startUsingBrowserMicrophone(boolean) {
+        getUserMedia({ audio: boolean }).then((stream) => {
+            handlerFunction(stream);
+        });
+    }
+
+    startUsingBrowserMicrophone(true);
+
+    function sendAudioDataToServer(audioData) {
+        var authResponse = JSON.parse(localStorage.getItem("authResponse"));
+        var senderId = authResponse.id;
+
+        var firstname = authResponse.firstname;
+
+        console.log("senderId:", senderId);
+
+        var chatMessage = {
+            sender: firstname,
+            type: "CHAT"
+        };
+
+        var destination = "/app/chat.send/" + senderId;
+
+
+        if (stompClient) {
+
+            chatMessage.audioContent = audioData;
+
+
+            stompClient.send(destination, {}, JSON.stringify(chatMessage));
+
+            isRecording.textContent = "Click play button to start listening";
+        }
+    }
+
+    // Stop recording handler
+    document.getElementById("stopRecording").addEventListener("click", (e) => {
+        rec.stop();
+    });
+}

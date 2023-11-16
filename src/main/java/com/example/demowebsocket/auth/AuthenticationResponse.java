@@ -20,5 +20,6 @@ public class AuthenticationResponse {
   private String firstname;
   private String lastname;
   private String phoneNumber ;
-  private byte[] image;
+  private String image;
+  private String email;
 }

@@ -26,20 +26,19 @@ public class User implements UserDetails {
 
     @Id
     private String id;
-    private String firstname;
-    private String lastname;
+    private String fullName;
+  //  private String lastname;
 
     private String phoneNumber;
     private String email;
     private String password;
 
-    public String getFirstname() {
-
-        return this.firstname;
+    public String getFullName() {
+        return fullName;
     }
 
     @DBRef
-    private List<String> conversation;
+    private List<Conversation> conversation = new ArrayList<>();
 
     @DBRef
     private List<ChatMessage> chatMessages = new ArrayList<>();

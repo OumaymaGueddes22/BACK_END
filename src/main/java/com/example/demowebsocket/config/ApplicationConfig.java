@@ -24,12 +24,8 @@ public class ApplicationConfig {
 
   @Bean
   public UserDetailsService userDetailsService() {
-    return identifier -> {
-      UserDetails userDetails = repository.findByEmailOrPhoneNumber(identifier, identifier)
-              .map(user -> (UserDetails) user) // Assuming your User class implements UserDetails
-              .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-      return userDetails;
-    };
+    return username -> repository.findByPhoneNumber(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
   }
 
   @Bean

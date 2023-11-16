@@ -894,3 +894,10 @@ body{
 .user-img{
     width: 55px !important;
 }
+
+
+
+button {
+    padding: 7px 20px;
+    cursor: pointer;
+}

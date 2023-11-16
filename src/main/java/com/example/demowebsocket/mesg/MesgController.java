@@ -53,7 +53,8 @@ public class MesgController {
             @DestinationVariable String userId,
             @RequestParam(value = "imageData", required = false) String imageData,
             @RequestParam(value = "videoData", required = false) String videoData,
-            @RequestParam(value = "pdfData", required = false) String pdfData) {
+            @RequestParam(value = "pdfData", required = false) String pdfData,
+            @RequestParam(value = "audioData", required = false) String audioData) {
         User user = userRepository.findById(userId).orElse(null);
 
         if (user != null) {
@@ -71,7 +72,7 @@ public class MesgController {
                 }
             }
             if (videoData != null) {
-                chatMessage.setTypeMessage("video");
+                chatMessage.setTypeMessage("Video");
                 try {
                     String[] videoParts = videoData.split(",");
                     if (videoParts.length == 2) {
@@ -99,6 +100,22 @@ public class MesgController {
                     return null;
                 }
             }
+
+            if (audioData != null) {
+                chatMessage.setTypeMessage("Audio");
+                try {
+                    String[] audioParts = audioData.split(",");
+                    if (audioParts.length == 2) {
+                        String base64Audio = audioParts[1];
+                        byte[] audioBytes = Base64.getDecoder().decode(base64Audio);
+                        chatMessage.setAudioContent(audioBytes);
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Error decoding audio: " + e.getMessage());
+                    return null;
+                }
+            }
+
             chatMessage.setDestination("public");
             chatMessageRepository.save(chatMessage);
             user.getChatMessages().add(chatMessage);
@@ -107,6 +124,7 @@ public class MesgController {
 
         return chatMessage;
     }
+
 
 
 

@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/conversation")
+@RequestMapping("/api/v1/conversation")
 public class ConversationControlleur {
 
     @Autowired
     private ConversationService convService;
 
-    @PostMapping("/createConv/{id}")
+    @PostMapping("/createConv")
     @ResponseStatus(HttpStatus.CREATED)
-    public Conversation createConversation(@PathVariable String id ,@RequestBody Conversation conv){
-        return convService.addConversation(id,conv);
+    public Conversation createConversation(@RequestBody Conversation conv){
+        return convService.addConversation(conv);
     }
 
     @GetMapping("/allConv")
