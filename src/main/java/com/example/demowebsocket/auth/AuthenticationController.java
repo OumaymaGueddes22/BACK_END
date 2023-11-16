@@ -29,15 +29,8 @@ public class AuthenticationController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@ModelAttribute RegisterRequest request) throws IOException {
-        Optional<MultipartFile> file = request.getFile();
-        if (file.isPresent()) {
-            String filename = storage.CreateNameCv(file.get());
-            storage.store(file.get(), filename);
-            request.setImage(filename);
-        }
-
-        return ResponseEntity.ok(service.register(request));
+    public ResponseEntity<AuthenticationResponse> register(@ModelAttribute RegisterRequest request, @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+        return ResponseEntity.ok(service.register(request, file));
     }
 
 

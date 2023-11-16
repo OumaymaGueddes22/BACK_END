@@ -1,6 +1,7 @@
 package com.example.demowebsocket.mesg;
 
 import com.example.demowebsocket.conversation.Conversation;
+import com.example.demowebsocket.conversation.ConversationRep;
 import com.example.demowebsocket.user.User;
 import com.example.demowebsocket.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class MesgController {
     private MesgService mesgService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ConversationRep conversationRep;
+
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
@@ -46,21 +50,24 @@ public class MesgController {
     }
 
 
-    @MessageMapping("/chat.send/{userId}")
+    @MessageMapping("/chat.send/{userId}/{conversationId}")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(
             @Payload ChatMessage chatMessage,
             @DestinationVariable String userId,
+            @DestinationVariable String conversationId,
             @RequestParam(value = "imageData", required = false) String imageData,
             @RequestParam(value = "videoData", required = false) String videoData,
             @RequestParam(value = "pdfData", required = false) String pdfData,
             @RequestParam(value = "audioData", required = false) String audioData) {
         User user = userRepository.findById(userId).orElse(null);
+        Conversation conversation = conversationRep.findById(conversationId).orElse(null);
 
-        if (user != null) {
+        if (user != null && conversation != null) {
             chatMessage.setTime(new Date());
             chatMessage.setUser(user);
             chatMessage.setIsDeleted(true);
+            chatMessage.setConversation(conversation);
 
             if (imageData != null) {
                 chatMessage.setTypeMessage("Image");
@@ -71,6 +78,7 @@ public class MesgController {
                     chatMessage.setImageContent(imageBytes);
                 }
             }
+
             if (videoData != null) {
                 chatMessage.setTypeMessage("Video");
                 try {
@@ -118,8 +126,6 @@ public class MesgController {
 
             chatMessage.setDestination("public");
             chatMessageRepository.save(chatMessage);
-            user.getChatMessages().add(chatMessage);
-            userRepository.save(user);
         }
 
         return chatMessage;

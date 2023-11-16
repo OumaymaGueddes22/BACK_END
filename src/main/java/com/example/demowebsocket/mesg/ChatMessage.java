@@ -37,6 +37,10 @@ public class ChatMessage {
     @JsonBackReference
     @DBRef
     private User user;
+
+    @DBRef
+    private Conversation conversation;
+
     private String sender;
     private String reciever;
     private User msgUser;

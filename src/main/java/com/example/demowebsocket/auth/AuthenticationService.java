@@ -40,67 +40,47 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequest request, MultipartFile file) {
+        if (file != null) {
+            String filename = storage.CreateNameCv(file);
+            storage.store(file, filename);
+            request.setImage(filename);
+        }
 
-        String filename = null;
         var user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .phoneNumber(request.getPhoneNumber())
+                .image(request.getImage()) // Assuming the image is set in the request
                 .build();
+
         user.setConversation(new ArrayList<>());
 
-        // Check if file is present before accessing its content
-        if (request.getFile().isPresent()) {
-            MultipartFile file = request.getFile().get();
-            filename = storage.CreateNameCv(file);
-            storage.store(file, filename);
-            request.setImage(filename);
-            user.setImage(filename);
-        }else {
-            request.setImage("no image");
-            user.setImage("no image");
-        }
-
-
         var savedUser = repository.save(user);
-        Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
 
-        if (existingPayementConversation != null) {
-            existingPayementConversation.getUser().add(user);
-            conversationRep.save(existingPayementConversation);
-            savedUser.getConversation().add(existingPayementConversation);
-        }else{
-            var paymentConversation = Conversation.builder()
+        var paymentConversation = Conversation.builder()
                 .isgroup(false)
                 .typeConv("payment")
                 .user(Collections.singletonList(savedUser))
                 .messages(new ArrayList<>())
                 .build();
-            conversationRep.save(paymentConversation);
-            savedUser.getConversation().add(paymentConversation);
-        }
-        Conversation existingReclamationConversation = conversationRep.findConversationByTypeConv("reclamation");
 
-        if (existingReclamationConversation != null) {
-            // If it exists, add the user to the existing conversation
-            existingReclamationConversation.getUser().add(user);
-            conversationRep.save(existingReclamationConversation);
-            savedUser.getConversation().add(existingReclamationConversation);
-        }else{
+        conversationRep.save(paymentConversation);
 
-            var reclamationConversation = Conversation.builder()
-                    .isgroup(false)
-                    .typeConv("reclamation")
-                    .user(Collections.singletonList(savedUser))
-                    .messages(new ArrayList<>())
-                    .build();
+        var reclamationConversation = Conversation.builder()
+                .isgroup(false)
+                .typeConv("reclamation")
+                .user(Collections.singletonList(savedUser))
+                .messages(new ArrayList<>())
+                .build();
 
-            conversationRep.save(reclamationConversation);
-            savedUser.getConversation().add(reclamationConversation);
-        }
+        conversationRep.save(reclamationConversation);
+
+        savedUser.getConversation().add(paymentConversation);
+        savedUser.getConversation().add(reclamationConversation);
+
         repository.save(savedUser);
 
         var jwtToken = jwtService.generateToken(savedUser);
@@ -108,17 +88,15 @@ public class AuthenticationService {
 
         saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse.builder()
-                        .accessToken(jwtToken)
-                        .refreshToken(refreshToken)
-                        .id(user.getId())
-                        .image(user.getImage())
-                        .fullName(user.getFullName())
-                        .phoneNumber(user.getPhoneNumber())
-                        .email(user.getEmail())
-                        .build();
-
-
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .fullName(user.getFullName())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .build();
     }
+
+
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
