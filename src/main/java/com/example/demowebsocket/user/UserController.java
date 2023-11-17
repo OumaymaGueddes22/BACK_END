@@ -45,7 +45,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}")//done
     public User findById(@PathVariable String id) {
         return service.findById(id);
     }
@@ -66,9 +66,9 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @PutMapping("/updateUser")
-    public User updateUser(User userRequest){
-        return service.updateUser(userRequest);
+    @PutMapping("/updateUser/{id}")//done
+    public User updateUser(@PathVariable String id,@RequestBody User userRequest){
+        return service.updateUser(id,userRequest);
     }
 
 
@@ -76,7 +76,7 @@ public class UserController {
     public Conversation addUserToConversation(@PathVariable String idConv, @PathVariable String idUser) {
         return service.addUserToConversation(idConv, idUser);
     }
-    @DeleteMapping("/deleteUser/{userId}")
+    @DeleteMapping("/deleteUser/{userId}")//done el conersation matetna7ash//el user yetna7a mel conversation
     public void deleteUser(@PathVariable String userId){
         service.deleteUser(userId);
     }

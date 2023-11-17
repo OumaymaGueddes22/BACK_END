@@ -4,6 +4,7 @@ import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.conversation.ConversationRep;
 import com.example.demowebsocket.user.User;
 import com.example.demowebsocket.user.UserRepository;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -272,7 +273,28 @@ public class MesgController {
         return chatMessageRepository.findByUserIdOrDestinationOrderByTimeDesc(userId, destination, PageRequest.of(startIndex, pageSize));
     }
 
+   /* @GetMapping("/msgByConv/{id}")
+    public List<ChatMessage> MessageByConversationId(@PathVariable String convId){
+        return chatMessageRepository.findChatMessageByConversation(convId);
+    }*/
 
+    @GetMapping("/getMessagesUserconv")
+    public List<ChatMessage>getMessagesUserConv(
+            @RequestParam String userId,
+            @RequestParam String conversationId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+
+        int startIndex = page - 1;
+        if (startIndex < 0) {
+            startIndex = 0;
+        }
+
+        return chatMessageRepository.findByUserIdAndConversationIdOrderByTimeDesc(userId,conversationId,  PageRequest.of(startIndex, pageSize));
+
+
+    }
 
 }
 

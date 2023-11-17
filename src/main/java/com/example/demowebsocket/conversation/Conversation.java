@@ -12,6 +12,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -27,10 +28,10 @@ public class Conversation {
 
     private String typeConv;
 
-    private String userCreate;
+    private User userCreate;
 //lezem user bel ID
     @JsonBackReference
-    private List<User> user ;
+    private List<User> user=new ArrayList<>() ;
 
     //lezem id message yetsab fel base
 

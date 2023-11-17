@@ -88,4 +88,8 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public void deleteConversationById(String conversationId) {
+        conversation.removeIf(conversation -> conversation.getId().equals(conversationId));
+    }
 }

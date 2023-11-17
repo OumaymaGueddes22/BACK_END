@@ -117,13 +117,17 @@ public class UserService {
 
 
 
-    public User updateUser(User userRequest){
-        User updateUser=repository.findById(userRequest.getId()).get();
-        updateUser.setEmail(userRequest.getEmail());
-        updateUser.setFullName(userRequest.getFullName());
-        updateUser.setPhoneNumber(userRequest.getPhoneNumber());
-        updateUser.setPassword(userRequest.getPassword());
-        return  repository.save(updateUser);
+    public User updateUser(String id ,User userRequest) {
+        User updateUser = repository.findById(id).orElse(null);
+        if (updateUser != null) {
+            updateUser.setFullName(userRequest.getFullName());
+            updateUser.setEmail(userRequest.getEmail());
+            updateUser.setPhoneNumber(userRequest.getPhoneNumber());
+            //     updateUser.setPassword(userRequest.getPassword());
+            return repository.save(updateUser);
+        }else {
+            return null;
+        }
     }
 
 

@@ -3,6 +3,7 @@ package com.example.demowebsocket.conversation;
 
 import com.example.demowebsocket.mesg.ChatMessage;
 import com.example.demowebsocket.mesg.ChatMessageRepository;
+import com.example.demowebsocket.user.User;
 import com.example.demowebsocket.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,10 @@ public class ConversationService {
 
     public Conversation addConversation(String userId,Conversation cver){
         cver.setId(UUID.randomUUID().toString().split("-")[0]);
-        cver.setUserCreate(userRepository.findById(userId).toString());
-        cver.getUser().add(userRepository.findById(userId).orElse(null));
+        cver.setUserCreate(userRepository.findById(userId).orElse(null));
+        User user=userRepository.findById(userId).orElse(null);
+        user.getConversation().add(cver);
+        userRepository.save(user);
         return  conversationRep.save(cver);
     }
 
@@ -49,6 +52,7 @@ public class ConversationService {
         if (updateConversation != null) {
 
             updateConversation.setIsgroup(convRequest.getIsgroup());
+            updateConversation.setTypeConv(convRequest.getTypeConv());
 
             return conversationRep.save(updateConversation);
         } else {
@@ -60,6 +64,13 @@ public class ConversationService {
 
 
     public void deletConversation(String convId){
+
+        List<User> allUsers = userRepository.findAll();
+
+        for (User user : allUsers) {
+            user.getConversation().removeIf(conversation -> conversation.getId().equals(convId));
+            userRepository.save(user);
+        }
         conversationRep.deleteById(convId);
     }
 

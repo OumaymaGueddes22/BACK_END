@@ -114,5 +114,10 @@ public class MesgService {
         return mesgRep.save(DeleMsg);
     }
 
+    public List<ChatMessage> MessageByConversationId(String convId){
+        return  mesgRep.findChatMessageByConversation(convId);
+    }
+
+  //  List<ChatMessage> findByUserIdAndConversationIdOrderByTimeDesc(String userId,String conversationId, Pageable pageable);
 
 }
