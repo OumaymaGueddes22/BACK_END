@@ -63,13 +63,13 @@ public class AuthenticationService {
         user.setConversation(new ArrayList<>());
 
         var savedUser = repository.save(user);
-        Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
+     /*   Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
 
         if (existingPayementConversation != null) {
             existingPayementConversation.getUser().add(user);
             conversationRep.save(existingPayementConversation);
             savedUser.getConversation().add(existingPayementConversation);
-        }else{
+        }else{*/
             var paymentConversation = Conversation.builder()
                     .isgroup(false)
                     .typeConv("payment")
@@ -78,15 +78,15 @@ public class AuthenticationService {
                     .build();
             conversationRep.save(paymentConversation);
             savedUser.getConversation().add(paymentConversation);
-        }
-        Conversation existingReclamationConversation = conversationRep.findConversationByTypeConv("reclamation");
+
+      /*  Conversation existingReclamationConversation = conversationRep.findConversationByTypeConv("reclamation");
 
         if (existingReclamationConversation != null) {
             // If it exists, add the user to the existing conversation
             existingReclamationConversation.getUser().add(user);
             conversationRep.save(existingReclamationConversation);
             savedUser.getConversation().add(existingReclamationConversation);
-        }else{
+        }else{*/
 
             var reclamationConversation = Conversation.builder()
                     .isgroup(false)
@@ -97,7 +97,7 @@ public class AuthenticationService {
 
             conversationRep.save(reclamationConversation);
             savedUser.getConversation().add(reclamationConversation);
-        }
+
         repository.save(savedUser);
 
         var jwtToken = jwtService.generateToken(savedUser);
