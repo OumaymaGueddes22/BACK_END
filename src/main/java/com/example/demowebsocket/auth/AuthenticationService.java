@@ -47,6 +47,10 @@ public class AuthenticationService {
             request.setImage(filename);
         }
 
+        if (repository.existsByPhoneNumber(request.getPhoneNumber())) {
+
+            throw new RuntimeException("Le numéro de téléphone est déjà utilisé.");
+        }
         var user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())

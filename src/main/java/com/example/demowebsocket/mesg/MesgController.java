@@ -42,7 +42,7 @@ public class MesgController {
 
     @MessageMapping("/mesg.sendMessage")
     @SendTo("/topic/public")
-    public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor , @RequestParam("image") MultipartFile image) {
+    public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor , @RequestParam(value = "image",required = false) MultipartFile image) {
         String senderFirstName = chatMessage.getSender();
         String recieverID =chatMessage.getReciever();
         headerAccessor.getSessionAttributes().put("username", senderFirstName);
@@ -193,10 +193,10 @@ public class MesgController {
     }*/
 
 
-    @PostMapping("/createMsg")
+    @PostMapping("/createMsg/{userId}/{converId}")//message yet7at fel conversationId
     @ResponseStatus(HttpStatus.CREATED)
-    public ChatMessage createMessage(@RequestBody ChatMessage msg){
-        return  mesgService.addChatMessage(msg);
+    public ChatMessage createMessage(@PathVariable  String userId ,@PathVariable String converId,@RequestBody ChatMessage msg){
+        return  mesgService.addChatMessage(userId, converId,msg);
     }
 
     @GetMapping("/allmesg")
@@ -224,9 +224,9 @@ public class MesgController {
         mesgService.deleteMesg(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    @PutMapping("/ChangeVisibility")
-    public ChatMessage messageVisible(ChatMessage msgReq){
-        return mesgService.messageVisible(msgReq);
+    @PutMapping("/ChangeVisibility/{id}")
+    public ChatMessage messageVisible(String id,ChatMessage msgReq){
+        return mesgService.messageVisible(id ,msgReq);
     }
 
 
@@ -278,7 +278,7 @@ public class MesgController {
         return chatMessageRepository.findChatMessageByConversation(convId);
     }*/
 
-    @GetMapping("/getMessagesUserconv")
+    @GetMapping("/getMessagesUserconv/{userId}/{conversationId}")
     public List<ChatMessage>getMessagesUserConv(
             @RequestParam String userId,
             @RequestParam String conversationId,
@@ -294,6 +294,11 @@ public class MesgController {
         return chatMessageRepository.findByUserIdAndConversationIdOrderByTimeDesc(userId,conversationId,  PageRequest.of(startIndex, pageSize));
 
 
+    }
+
+    @GetMapping("/getMessageConvId/{convId}")
+    public List<ChatMessage>getMesserByConv( @PathVariable String convId){
+        return chatMessageRepository.findChatMessageByConversation(convId);
     }
 
 }

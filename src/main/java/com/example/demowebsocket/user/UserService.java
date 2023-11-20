@@ -1,5 +1,6 @@
 package com.example.demowebsocket.user;
 
+import com.example.demowebsocket.Service.StorageService;
 import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.conversation.ConversationRep;
 import com.example.demowebsocket.mesg.ChatMessage;
@@ -12,7 +13,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private  UserRepository repository;
+
+    private final StorageService storage;
 
     private final JavaMailSender mailSender;
 
@@ -56,8 +61,8 @@ public class UserService {
         // save the new password
         repository.save(user);
     }
-    public void sendPasswordResetCode(String email) {
-        User user = findByEmail(email);
+    public void sendPasswordResetCode(String phoneNumber) {
+        User user = findByphoneNumber(phoneNumber);
         if (user != null) {
             String resetCode = generateRandomCode();
 
@@ -84,8 +89,8 @@ public class UserService {
     }
 
 
-    public void resetPassword(String email, String resetCode, String newPassword) {
-        User user = findByEmail(email);
+    public void resetPassword(String phoneNumber, String resetCode, String newPassword) {
+        User user = findByphoneNumber(phoneNumber);
         if (user != null && resetCode.equals(user.getResetCode())) {
             // Réinitialiser le mot de passe
             user.setPassword(passwordEncoder.encode(newPassword));
@@ -100,6 +105,11 @@ public class UserService {
         int randomCode = (int) (Math.random() * 900000) + 100000;
         return String.valueOf(randomCode);
     }
+
+    public User findByphoneNumber(String phoneNumber) {
+        return repository.findByphoneNumber(phoneNumber);
+    }
+
 
     public User addUser(User user){
 
@@ -131,6 +141,18 @@ public class UserService {
     }
 
 
+    public void updateProfileImage(String userId, MultipartFile newImage) {
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé avec l'ID : " + userId));
+
+        storage.delete(user.getImage());
+
+        String newImageName = storage.CreateNameCv(newImage);
+        storage.store(newImage, newImageName);
+
+        user.setImage(newImageName);
+        repository.save(user);
+    }
     //addMessageToUser
     public User addMessageToUser(String idUser, ChatMessage chatMsg){
         chatMsg=chatRep.save(chatMsg);

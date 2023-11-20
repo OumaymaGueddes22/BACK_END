@@ -23,6 +23,16 @@ public class StorageService {
     private UserRepository userRepository;
     private final Path rootLocation = Paths.get("upload-dir");
 
+    public void delete(String filename) {
+        try {
+            Path file = rootLocation.resolve(filename);
+            Files.deleteIfExists(file);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la suppression du fichier : " + filename);
+        }
+    }
+
+
     public String CreateNameCv(MultipartFile file) {
 
         try {

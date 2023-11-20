@@ -521,8 +521,9 @@ function initFunction() {
             sender: fullName,
             type: "CHAT"
         };
+        var conversationId ="65574dbe8505c07d8ea27214";
 
-        var destination = "/app/chat.send/" + senderId;
+        var destination = "/app/chat.send/" + senderId+ "/" + conversationId;
 
 
         if (stompClient) {
