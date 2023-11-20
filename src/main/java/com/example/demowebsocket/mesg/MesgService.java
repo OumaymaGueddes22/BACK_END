@@ -17,6 +17,7 @@ public class MesgService {
     @Autowired
     private ChatMessageRepository mesgRep;
 
+
     @Autowired
     private UserRepository userRep;
 
@@ -30,12 +31,8 @@ public class MesgService {
     }
 
 
-    public ChatMessage addChatMessage(String userId ,String convId,ChatMessage msg) {
+    public ChatMessage addChatMessage(ChatMessage msg) {
         msg.setId(UUID.randomUUID().toString().split("-")[0]);
-        msg.setConversation(convRep.findById(convId).orElse(null));
-        msg.setUser(userRep.findById(userId).orElse(null));
-        User user=userRep.findById(userId).orElse(null);
-        msg.setSender(user.getFullName());
         return mesgRep.save(msg);
     }
 
@@ -111,15 +108,15 @@ public class MesgService {
         mesgRep.deleteById(mesgId);
     }
 
-    public ChatMessage messageVisible(String id,ChatMessage msgReq){
-        ChatMessage DeleMsg=mesgRep.findById(id).get();
+    public ChatMessage messageVisible(ChatMessage msgReq){
+        ChatMessage DeleMsg=mesgRep.findById(msgReq.getId()).get();
         DeleMsg.setIsDeleted(msgReq.getIsDeleted());
         return mesgRep.save(DeleMsg);
     }
 
-  /*  public List<ChatMessage> MessageByConversationId(String convId){
-        return  mesgRep.findChatMessageByConversation(convId);
-    }*/
+//    public List<ChatMessage> MessageByConversationId(String convId){
+//        return  mesgRep.findChatMessageByConversation(convId);
+//    }
 
   //  List<ChatMessage> findByUserIdAndConversationIdOrderByTimeDesc(String userId,String conversationId, Pageable pageable);
 

@@ -11,16 +11,13 @@ import java.util.Optional;
 public interface UserRepository extends MongoRepository<User, String> {
 
     Optional<User> findByPhoneNumber(String phoneNumber);
-
-    List<User> findUsersByEmail(String email);
-    List<User> findUsersByPhoneNumber(String phoneNumber);
   User findByUsername(String username);
   User findByEmail(String email);
 
   List<User> findByConversationId(String convID);
 
 
-    boolean existsByPhoneNumber(String phoneNumber);
 
-    User findByphoneNumber(String phoneNumber);
+
+
 }

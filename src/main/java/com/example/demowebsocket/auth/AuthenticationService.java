@@ -47,10 +47,6 @@ public class AuthenticationService {
             request.setImage(filename);
         }
 
-        if (repository.existsByPhoneNumber(request.getPhoneNumber())) {
-
-            throw new RuntimeException("Le numéro de téléphone est déjà utilisé.");
-        }
         var user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
@@ -63,9 +59,9 @@ public class AuthenticationService {
         user.setConversation(new ArrayList<>());
 
         var savedUser = repository.save(user);
-     /*   Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
+        Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
 
-        if (existingPayementConversation != null) {
+      /*  if (existingPayementConversation != null) {
             existingPayementConversation.getUser().add(user);
             conversationRep.save(existingPayementConversation);
             savedUser.getConversation().add(existingPayementConversation);
@@ -79,7 +75,7 @@ public class AuthenticationService {
             conversationRep.save(paymentConversation);
             savedUser.getConversation().add(paymentConversation);
 
-      /*  Conversation existingReclamationConversation = conversationRep.findConversationByTypeConv("reclamation");
+       /* Conversation existingReclamationConversation = conversationRep.findConversationByTypeConv("reclamation");
 
         if (existingReclamationConversation != null) {
             // If it exists, add the user to the existing conversation

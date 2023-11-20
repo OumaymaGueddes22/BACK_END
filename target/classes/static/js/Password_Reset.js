@@ -5,13 +5,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     requestCodeForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        const phoneNumber = document.getElementById("phoneNumber").value;
+        const email = document.getElementById("email").value;
 
         const data = "code de réinitialisation a été envoyé";
 
         message.textContent = data;
         // Make an AJAX request to request the reset code
-        fetch("/api/v1/users/request-code?phoneNumber=" + phoneNumber, {
+        fetch("/api/v1/users/request-code?email=" + email, {
             method: "POST"
         })
             .then(response => response.text())
@@ -29,12 +29,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     resetPasswordForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        const phoneNumber = document.getElementById("phoneNumber").value;
+        const email = document.getElementById("email").value;
         const resetCode = document.getElementById("resetCode").value;
         const newPassword = document.getElementById("newPassword").value;
 
         // Make an AJAX request to reset the password
-        fetch("/api/v1/users/reset?phoneNumber=" + phoneNumber + "&resetCode=" + resetCode + "&newPassword=" + newPassword, {
+        fetch("/api/v1/users/reset?email=" + email + "&resetCode=" + resetCode + "&newPassword=" + newPassword, {
             method: "POST"
         })
             .then(response => response.text())

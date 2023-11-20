@@ -18,6 +18,4 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage,Strin
    List<ChatMessage> findByUserIdAndConversationIdOrderByTimeDesc(String userId,String conversationId, Pageable pageable);
 
   // List<ChatMessage> findChatMessageByConversation(String id);
-
-   List<ChatMessage> findChatMessageByConversation(String convId);
 }

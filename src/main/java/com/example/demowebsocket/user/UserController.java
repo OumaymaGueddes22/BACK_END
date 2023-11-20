@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.Base64;
@@ -21,8 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserRepository userRep;
     @Autowired
     private UserService service;
 
@@ -102,43 +99,20 @@ public class UserController {
 
 
     @PostMapping("/request-code")
-    public ResponseEntity<String> requestCode(@RequestParam String phoneNumber) {
-        service.sendPasswordResetCode(phoneNumber);
+    public ResponseEntity<String> requestCode(@RequestParam String email) {
+        service.sendPasswordResetCode(email);
         return ResponseEntity.ok("Un code de réinitialisation a été envoyé à votre e-mail.");
     }
 
     @PostMapping("/reset")
-    public ResponseEntity<String> resetPassword(@RequestParam String phoneNumber, @RequestParam String resetCode, @RequestParam String newPassword) {
+    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String resetCode, @RequestParam String newPassword) {
         try {
-            service.resetPassword(phoneNumber, resetCode, newPassword);
+            service.resetPassword(email, resetCode, newPassword);
             return ResponseEntity.ok("Mot de passe réinitialisé avec succès.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Échec de réinitialisation du mot de passe : " + e.getMessage());
         }
     }
 
-    @PostMapping("/update-image/{userId}")
-    public ResponseEntity<String> updateProfileImage(
-            @PathVariable String userId,
-            @RequestParam("image") MultipartFile newImage) {
-        try {
-            service.updateProfileImage(userId, newImage);
-            return ResponseEntity.ok("Image mise à jour avec succès !");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur lors de la mise à jour de l'image : " + e.getMessage());
-        }
-    }
-
-
-    @GetMapping("/userPhoneNumber/{num}")
-    List<User> findUsersByPhoneNumber(String phoneNumber){
-        return userRep.findUsersByPhoneNumber(phoneNumber);
-    }
-
-    @GetMapping("/userPhoneNumber/{email}")
-    List<User> findUsersByEmail(String email){
-        return userRep.findUsersByEmail(email);
-    }
 }
 
