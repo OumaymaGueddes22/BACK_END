@@ -67,7 +67,7 @@ public class AuthenticationService {
 
         List<User> adminUsers = repository.findByRole("ADMIN");
         var savedUser = repository.save(user);
-        Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
+//        Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
 
       /*  if (existingPayementConversation != null) {
             existingPayementConversation.getUser().add(user);

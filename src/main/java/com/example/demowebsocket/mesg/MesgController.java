@@ -52,7 +52,6 @@ public class MesgController {
 
     @MessageMapping("/test.send")
     @SendTo("/topic/public")
-
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
         System.out.println("Received message on the server: " + chatMessage.getTxt());
         return chatMessage;
