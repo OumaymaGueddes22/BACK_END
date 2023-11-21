@@ -21,6 +21,8 @@ import java.util.List;
 public class UserController {
 
     @Autowired
+    private ConversationService conversationService;
+    @Autowired
     private UserService service;
 
     @PatchMapping
@@ -39,11 +41,26 @@ public class UserController {
 
     }
 
-    @GetMapping("/allUsers")
+    @GetMapping("/allUsers")//-
     public List<User> getAllUser(){
         return service.getAllUsers();
     }
 
+
+
+    @GetMapping("/haveCommonConversation/{userId1}/{userId2}")
+    public String haveCommonConversation(@PathVariable String userId1, @PathVariable String userId2) {
+    //    User user1 = service.findById(userId1);
+    //    User user2 = service.findById(userId2);
+
+        boolean haveCommonConversation = service.haveCoommunConversation(userId1, userId2);
+
+        if (haveCommonConversation) {
+            return "Users have a common conversation without 'reclamation' or 'payment' type.";
+        } else {
+            return "Users do not have a common conversation without 'reclamation' or 'payment' type.";
+        }
+    }
 
     @GetMapping("/{id}")//done
     public User findById(@PathVariable String id) {

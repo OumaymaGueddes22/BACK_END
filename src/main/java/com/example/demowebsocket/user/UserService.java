@@ -56,6 +56,23 @@ public class UserService {
         // save the new password
         repository.save(user);
     }
+
+    public boolean haveCoommunConversation(String userId1 ,String userId2){
+        List<Conversation> user1Conversations=convRep.findConversationByUserId(userId1);
+        List<Conversation> user2Conversations=convRep.findConversationByUserId(userId2);
+        for (Conversation user1Conversation : user1Conversations) {
+            for (Conversation user2Conversation : user2Conversations) {
+                if (user1Conversation.getId().equals(user2Conversation.getId()) &&
+                        !user1Conversation.getTypeConv().equals("reclamation") &&
+                        !user1Conversation.getTypeConv().equals("payment")) {
+                    return true; // Found a common conversation
+                }
+            }
+        }
+
+        return false;
+
+    }
     public void sendPasswordResetCode(String email) {
         User user = findByEmail(email);
         if (user != null) {

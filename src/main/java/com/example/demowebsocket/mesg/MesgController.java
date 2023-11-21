@@ -40,7 +40,7 @@ public class MesgController {
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
-    @MessageMapping("/mesg.sendMessage")
+    @MessageMapping("/mesg.sendMessage")//conversation
     @SendTo("/topic/public")
     public ChatMessage register(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor , @RequestParam("image") MultipartFile image) {
         String senderFirstName = chatMessage.getSender();
@@ -50,12 +50,12 @@ public class MesgController {
         return chatMessage;
     }
 
-    @MessageMapping("/test.send")
+   /* @MessageMapping("/test.send")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
         System.out.println("Received message on the server: " + chatMessage.getTxt());
         return chatMessage;
-    }
+    }*/
 
     @MessageMapping("/chat.send/{userId}/{conversationId}")
     @SendTo("/topic/public")
