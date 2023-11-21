@@ -16,6 +16,9 @@ public interface UserRepository extends MongoRepository<User, String> {
 
   List<User> findByConversationId(String convID);
 
+    boolean existsByPhoneNumber(String phoneNumber);
+    List<User> findByRole(String role);
+
 
 
 

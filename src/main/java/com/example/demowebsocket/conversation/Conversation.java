@@ -33,6 +33,9 @@ public class Conversation {
     @JsonBackReference
     private List<User> user=new ArrayList<>() ;
 
+
+
+
     //lezem id message yetsab fel base
 
     private List<ChatMessage> messages;

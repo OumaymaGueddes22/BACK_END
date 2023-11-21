@@ -26,7 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 
 @Service
@@ -47,17 +49,23 @@ public class AuthenticationService {
             request.setImage(filename);
         }
 
+
+        if (repository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new RuntimeException("Le numéro de téléphone est déjà utilisé.");
+        }
+
         var user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+                .role("Clietn")
                 .phoneNumber(request.getPhoneNumber())
                 .image(request.getImage()) // Assuming the image is set in the request
                 .build();
 
         user.setConversation(new ArrayList<>());
 
+        List<User> adminUsers = repository.findByRole("ADMIN");
         var savedUser = repository.save(user);
         Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
 
@@ -66,13 +74,13 @@ public class AuthenticationService {
             conversationRep.save(existingPayementConversation);
             savedUser.getConversation().add(existingPayementConversation);
         }else{*/
-            var paymentConversation = Conversation.builder()
-                    .isgroup(false)
-                    .typeConv("payment")
-                    .user(Collections.singletonList(savedUser))
-                    .messages(new ArrayList<>())
-                    .build();
-            conversationRep.save(paymentConversation);
+        var paymentConversation = Conversation.builder()
+                .isgroup(false)
+                .typeConv("payment")
+                .user(new ArrayList<>(Arrays.asList(savedUser)))
+                .messages(new ArrayList<>())
+                .build();
+        conversationRep.save(paymentConversation);
             savedUser.getConversation().add(paymentConversation);
 
        /* Conversation existingReclamationConversation = conversationRep.findConversationByTypeConv("reclamation");
@@ -84,15 +92,25 @@ public class AuthenticationService {
             savedUser.getConversation().add(existingReclamationConversation);
         }else{*/
 
-            var reclamationConversation = Conversation.builder()
-                    .isgroup(false)
-                    .typeConv("reclamation")
-                    .user(Collections.singletonList(savedUser))
-                    .messages(new ArrayList<>())
-                    .build();
+        var reclamationConversation = Conversation.builder()
+                .isgroup(false)
+                .typeConv("reclamation")
+                .user(new ArrayList<>(Arrays.asList(savedUser)))
+                .messages(new ArrayList<>())
+                .build();
 
             conversationRep.save(reclamationConversation);
             savedUser.getConversation().add(reclamationConversation);
+
+        for (User adminUser : adminUsers) {
+            paymentConversation.getUser().add(adminUser);
+            reclamationConversation.getUser().add(adminUser);
+            adminUser.getConversation().add(paymentConversation);
+            adminUser.getConversation().add(reclamationConversation);
+            conversationRep.save(paymentConversation);
+            conversationRep.save(reclamationConversation);
+            repository.save(adminUser);
+        }
 
         repository.save(savedUser);
 
