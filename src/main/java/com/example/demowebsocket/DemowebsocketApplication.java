@@ -28,15 +28,15 @@ public class DemowebsocketApplication {
 						.password("admin")
 						.phoneNumber("admin")
 						.role("ADMIN")
-
 						.build();
 
-				System.out.println("Admin token: " + service.register(admin, null).getAccessToken());
+				System.out.println("Admin token: " + service.registerAdmin(admin, null).getAccessToken());
 			} else {
 				System.out.println("Admin user exists");
 			}
 		};
 	}
+
 
 }
 

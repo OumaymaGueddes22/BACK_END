@@ -58,7 +58,7 @@ public class AuthenticationService {
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role("Clietn")
+                .role("CLIENT")
                 .phoneNumber(request.getPhoneNumber())
                 .image(request.getImage()) // Assuming the image is set in the request
                 .build();
@@ -67,13 +67,7 @@ public class AuthenticationService {
 
         List<User> adminUsers = repository.findByRole("ADMIN");
         var savedUser = repository.save(user);
-//        Conversation existingPayementConversation = conversationRep.findConversationByTypeConv("payment");
 
-      /*  if (existingPayementConversation != null) {
-            existingPayementConversation.getUser().add(user);
-            conversationRep.save(existingPayementConversation);
-            savedUser.getConversation().add(existingPayementConversation);
-        }else{*/
         var paymentConversation = Conversation.builder()
                 .isgroup(false)
                 .typeConv("payment")
@@ -81,16 +75,7 @@ public class AuthenticationService {
                 .messages(new ArrayList<>())
                 .build();
         conversationRep.save(paymentConversation);
-            savedUser.getConversation().add(paymentConversation);
-
-       /* Conversation existingReclamationConversation = conversationRep.findConversationByTypeConv("reclamation");
-
-        if (existingReclamationConversation != null) {
-            // If it exists, add the user to the existing conversation
-            existingReclamationConversation.getUser().add(user);
-            conversationRep.save(existingReclamationConversation);
-            savedUser.getConversation().add(existingReclamationConversation);
-        }else{*/
+        savedUser.getConversation().add(paymentConversation);
 
         var reclamationConversation = Conversation.builder()
                 .isgroup(false)
@@ -128,6 +113,43 @@ public class AuthenticationService {
     }
 
 
+
+    public AuthenticationResponse registerAdmin(RegisterRequest request, MultipartFile file) {
+        if (file != null) {
+            String filename = storage.CreateNameCv(file);
+            storage.store(file, filename);
+            request.setImage(filename);
+        }
+
+
+        if (repository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new RuntimeException("Le numéro de téléphone est déjà utilisé.");
+        }
+
+        var user = User.builder()
+                .fullName(request.getFullName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
+                .phoneNumber(request.getPhoneNumber())
+                .image(request.getImage()) // Assuming the image is set in the request
+                .build();
+
+        var savedUser = repository.save(user);
+
+
+        var jwtToken = jwtService.generateToken(savedUser);
+        var refreshToken = jwtService.generateRefreshToken(savedUser);
+
+        saveUserToken(savedUser, jwtToken);
+        return AuthenticationResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .fullName(user.getFullName())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .build();
+    }
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
