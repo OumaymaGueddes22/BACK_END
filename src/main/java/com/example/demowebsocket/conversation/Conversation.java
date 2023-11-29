@@ -31,6 +31,7 @@ public class Conversation {
     private User userCreate;
 //lezem user bel ID
     @JsonBackReference
+    @DBRef
     private List<User> user=new ArrayList<>() ;
 
 
