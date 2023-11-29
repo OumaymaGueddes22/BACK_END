@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.Base64;
@@ -128,6 +129,20 @@ public class UserController {
             return ResponseEntity.ok("Mot de passe réinitialisé avec succès.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Échec de réinitialisation du mot de passe : " + e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/update-image/{userId}")
+    public ResponseEntity<String> updateProfileImage(
+            @PathVariable String userId,
+            @RequestParam("image") MultipartFile newImage) {
+        try {
+            service.updateProfileImage(userId, newImage);
+            return ResponseEntity.ok("Image mise à jour avec succès !");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors de la mise à jour de l'image : " + e.getMessage());
         }
     }
 

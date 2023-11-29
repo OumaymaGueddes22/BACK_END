@@ -80,5 +80,15 @@ public class StorageService {
         return rootLocation.resolve(filename).toString();
     }
 
+
+    public void delete(String filename) {
+        try {
+            Path file = rootLocation.resolve(filename);
+            Files.deleteIfExists(file);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la suppression du fichier : " + filename);
+        }
+    }
+
 }
 

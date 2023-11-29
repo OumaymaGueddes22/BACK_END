@@ -1,5 +1,6 @@
 package com.example.demowebsocket.user;
 
+import com.example.demowebsocket.Service.StorageService;
 import com.example.demowebsocket.conversation.Conversation;
 import com.example.demowebsocket.conversation.ConversationRep;
 import com.example.demowebsocket.mesg.ChatMessage;
@@ -12,7 +13,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private  UserRepository repository;
+    @Autowired
+    private StorageService storage;
 
     private final JavaMailSender mailSender;
 
@@ -278,5 +283,16 @@ public class UserService {
         return repository.findByUsername(username); // Assuming you have a findByUsername method in your UserRepository
     }
 
+    public void updateProfileImage(String userId, MultipartFile newImage) {
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé avec l'ID : " + userId));
+        if (user.getImage() != null && !user.getImage().isEmpty()) {
+            storage.delete(user.getImage());
+        }
+        String newImageName = storage.CreateNameCv(newImage);
+        storage.store(newImage, newImageName);
+        user.setImage(newImageName);
+        repository.save(user);
+    }
 
 }
