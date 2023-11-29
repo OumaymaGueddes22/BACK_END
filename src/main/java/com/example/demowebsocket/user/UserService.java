@@ -33,15 +33,16 @@ public class UserService {
     private ConversationRep convRep;
     private final PasswordEncoder passwordEncoder;
     @Autowired
-    private  UserRepository repository;
+    private UserRepository repository;
     @Autowired
     private StorageService storage;
 
     private final JavaMailSender mailSender;
 
-    public User findByEmail(String email) {
-        return repository.findByEmail(email);
+    public User findByphoneNumber(String phoneNumber) {
+        return repository.findByphoneNumber(phoneNumber);
     }
+
     public void changePassword(ChangePasswordRequest request, Principal connectedUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
@@ -62,9 +63,9 @@ public class UserService {
         repository.save(user);
     }
 
-    public boolean haveCoommunConversation(String userId1 ,String userId2){
-        List<Conversation> user1Conversations=convRep.findConversationByUserId(userId1);
-        List<Conversation> user2Conversations=convRep.findConversationByUserId(userId2);
+    public boolean haveCoommunConversation(String userId1, String userId2) {
+        List<Conversation> user1Conversations = convRep.findConversationByUserId(userId1);
+        List<Conversation> user2Conversations = convRep.findConversationByUserId(userId2);
         for (Conversation user1Conversation : user1Conversations) {
             for (Conversation user2Conversation : user2Conversations) {
                 if (user1Conversation.getId().equals(user2Conversation.getId()) &&
@@ -78,8 +79,9 @@ public class UserService {
         return false;
 
     }
-    public void sendPasswordResetCode(String email) {
-        User user = findByEmail(email);
+
+    public void sendPasswordResetCode(String phoneNumber) {
+        User user = findByphoneNumber(phoneNumber);
         if (user != null) {
             String resetCode = generateRandomCode();
 
@@ -106,8 +108,8 @@ public class UserService {
     }
 
 
-    public void resetPassword(String email, String resetCode, String newPassword) {
-        User user = findByEmail(email);
+    public void resetPassword(String phoneNumber, String resetCode, String newPassword) {
+        User user = findByphoneNumber(phoneNumber);
         if (user != null && resetCode.equals(user.getResetCode())) {
             // Réinitialiser le mot de passe
             user.setPassword(passwordEncoder.encode(newPassword));

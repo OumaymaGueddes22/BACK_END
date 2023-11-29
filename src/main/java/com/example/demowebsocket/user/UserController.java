@@ -117,15 +117,15 @@ public class UserController {
 
 
     @PostMapping("/request-code")
-    public ResponseEntity<String> requestCode(@RequestParam String email) {
-        service.sendPasswordResetCode(email);
+    public ResponseEntity<String> requestCode(@RequestParam String phoneNumber) {
+        service.sendPasswordResetCode(phoneNumber);
         return ResponseEntity.ok("Un code de réinitialisation a été envoyé à votre e-mail.");
     }
 
     @PostMapping("/reset")
-    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String resetCode, @RequestParam String newPassword) {
+    public ResponseEntity<String> resetPassword(@RequestParam String phoneNumber, @RequestParam String resetCode, @RequestParam String newPassword) {
         try {
-            service.resetPassword(email, resetCode, newPassword);
+            service.resetPassword(phoneNumber, resetCode, newPassword);
             return ResponseEntity.ok("Mot de passe réinitialisé avec succès.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Échec de réinitialisation du mot de passe : " + e.getMessage());
